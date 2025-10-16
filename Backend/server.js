@@ -1,0 +1,76 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0'; // Bind to all interfaces for deployment
+
+// Middleware
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['http://143.198.228.249:3000', 'http://143.198.228.249', 'https://143.198.228.249'] 
+    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true
+}));
+app.use(express.json());
+
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ucf_coding_practice', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
+
+// Import routes
+const questionRoutes = require('./routes/questions');
+const userRoutes = require('./routes/users');
+const progressRoutes = require('./routes/progress');
+const codeRunnerRoutes = require('./routes/codeRunner');
+
+// Use routes
+app.use('/api/questions', questionRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/code', codeRunnerRoutes);
+
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../Frontend/build')));
+  
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+  });
+} else {
+  // Default route for development
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: 'UCF Coding Practice Backend Server',
+      server: `Running on ${HOST}:${PORT}`,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+}
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server is running on ${HOST}:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`Production server accessible at: http://143.198.228.249:${PORT}`);
+  }
+});
+
+module.exports = app;

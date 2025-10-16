@@ -1,0 +1,104 @@
+﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
+import { User, AuthContextType } from '../types';
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      setToken(savedToken);
+      // Set default authorization header
+      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+      // Fetch user profile
+      fetchUserProfile(savedToken);
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchUserProfile = async (authToken: string) => {
+    try {
+      const response = await axios.get('/api/users/profile', {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      setUser(response.data);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await axios.post('/api/users/login', { email, password });
+      const { token: authToken, user: userData } = response.data;
+      
+      setToken(authToken);
+      setUser(userData);
+      localStorage.setItem('token', authToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const register = async (username: string, email: string, password: string) => {
+    try {
+      const response = await axios.post('/api/users/register', {
+        username,
+        email,
+        password
+      });
+      const { token: authToken, user: userData } = response.data;
+      
+      setToken(authToken);
+      setUser(userData);
+      localStorage.setItem('token', authToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Registration failed');
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+  };
+
+  const value: AuthContextType = {
+    user,
+    token,
+    login,
+    register,
+    logout,
+    loading
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
