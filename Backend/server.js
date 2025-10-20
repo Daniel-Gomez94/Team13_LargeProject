@@ -1,76 +1,89 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import compression from "compression";
+import morgan from "morgan";
+import "dotenv/config";
+import mongoose from "mongoose";
 
-// Load environment variables
-dotenv.config();
+import api from "./routes/index.js";
+import { notFound } from "./middleware/notFound.js";
+import { errorHandler } from "./middleware/error.js";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || '0.0.0.0'; // Bind to all interfaces for deployment
-
-// Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['http://143.198.228.249:3000', 'http://143.198.228.249', 'https://143.198.228.249'] 
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
-  credentials: true
-}));
-app.use(express.json());
-
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ucf_coding_practice', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
-
-// Import routes
-const questionRoutes = require('./routes/questions');
-const userRoutes = require('./routes/users');
-const progressRoutes = require('./routes/progress');
-const codeRunnerRoutes = require('./routes/codeRunner');
-
-// Use routes
-app.use('/api/questions', questionRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/code', codeRunnerRoutes);
-
-// Serve static files from React build in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../Frontend/build')));
-  
-  // Handle React routing, return all requests to React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
-  });
-} else {
-  // Default route for development
-  app.get('/', (req, res) => {
-    res.json({ 
-      message: 'UCF Coding Practice Backend Server',
-      server: `Running on ${HOST}:${PORT}`,
-      environment: process.env.NODE_ENV || 'development'
-    });
-  });
+/* -------- Env sanity checks -------- */
+const requiredEnv = ["MONGODB_URI", "JWT_SECRET"];//This is used to check the env files have the correct info
+for (const k of requiredEnv) {
+  if (!process.env[k]) {
+    console.error(`[BOOT] Missing required env var: ${k}`);
+  }
 }
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+/* -------- App & middleware -------- */
+const app = express();
+app.disable("x-powered-by");
+app.set("trust proxy", true); // if behind nginx/proxy
+
+// allow single origin or comma-separated list in CLIENT_ORIGIN
+const allowedOrigins =
+  (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.split(",").map(s => s.trim()).filter(Boolean)) || true;
+
+app.use(helmet());
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(compression());
+app.use(express.json({ limit: "1mb" }));
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+/* -------- Health / readiness -------- */
+app.get("/healthz", (_req, res) => res.json({ ok: true }));
+app.get("/readyz", (_req, res) => {
+  const state = mongoose.connection.readyState; // 1 = connected
+  res.status(state === 1 ? 200 : 503).json({ mongoConnected: state === 1 });
 });
 
-app.listen(PORT, HOST, () => {
-  console.log(`Server is running on ${HOST}:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`Production server accessible at: http://143.198.228.249:${PORT}`);
-  }
+/* -------- Routes -------- */
+app.use("/api", api);
+
+/* -------- 404 + error handler -------- */
+app.use(notFound);
+app.use(errorHandler);
+
+/* -------- Mongo connect & server start -------- */
+mongoose.set("strictQuery", true);
+
+try {
+  await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 8000 });
+  console.log("[BOOT] Connected to MongoDB");
+} catch (err) {
+  console.error("[BOOT] MongoDB connection failed:", err.message);
+  process.exit(1);
+}
+
+const port = Number(process.env.PORT) || 4000;
+const server = app.listen(port, () => {
+  console.log(`API listening on :${port} (env: ${process.env.NODE_ENV || "development"})`);
 });
 
-module.exports = app;
+/* -------- Graceful shutdown -------- */
+const shutdown = (signal) => {
+  console.log(`[SHUTDOWN] ${signal} received, closing server...`);
+  server.close(async () => {
+    try {
+      await mongoose.connection.close();
+      console.log("[SHUTDOWN] MongoDB connection closed. Bye!");
+      process.exit(0);
+    } catch (e) {
+      console.error("[SHUTDOWN] Error during shutdown:", e);
+      process.exit(1);
+    }
+  });
+};
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("unhandledRejection", (reason) => {
+  console.error("[FATAL] Unhandled Promise Rejection:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("[FATAL] Uncaught Exception:", err);
+  shutdown("uncaughtException");
+});
