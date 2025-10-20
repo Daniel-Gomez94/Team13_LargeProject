@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,9 +9,9 @@ const Header: React.FC = () => {
   return (
     <header className="header">
       <h1>
-        <span className="ucf-accent">??</span>
+        <span className="ucf-accent">⚔️</span>
         UCF Computer Science Foundations Practice
-        <span className="ucf-accent">??</span>
+        <span className="ucf-accent">⚔️</span>
       </h1>
       <div className="header-nav">
         {/* Always show navigation links */}

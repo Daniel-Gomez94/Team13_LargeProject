@@ -1,0 +1,48 @@
+﻿import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import Header from './components/Header';
+import Login from './components/Login';
+import Register from './components/Register';
+import CodingPractice from './components/CodingPractice';
+import StandalonePractice from './components/StandalonePractice';
+import ProtectedRoute from './components/ProtectedRoute';
+import './App.css';
+
+function AppContent() {
+  const location = useLocation();
+  const isStandalone = location.pathname === '/standalone';
+
+  return (
+    <div className="App">
+      {!isStandalone && <Header />}
+      <main style={{ padding: isStandalone ? '0' : '20px' }}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/standalone" element={<StandalonePractice />} />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <CodingPractice />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;

@@ -1,0 +1,24 @@
+﻿import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
+
+const Header: React.FC = () => {
+  const { user, logout } = useAuth();
+
+  return (
+    <header className="header">
+      <h1>
+        <span className="ucf-accent">??</span>
+        UCF Computer Science Foundations Practice
+        <span className="ucf-accent">??</span>
+      </h1>
+      {user && (
+        <div className="header-nav">
+          <span>Welcome, {user.username}!</span>
+          <button onClick={logout}>Logout</button>
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Header;
