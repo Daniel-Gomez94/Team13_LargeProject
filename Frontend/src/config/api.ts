@@ -4,7 +4,7 @@ const config = {
     API_BASE_URL: 'http://localhost:5000/api'
   },
   production: {
-    API_BASE_URL: 'http://143.244.191.232:5000/api'
+    API_BASE_URL: 'http://143.198.228.249:5000/api'
   }
 };
 

@@ -1,0 +1,3 @@
+﻿SKIP_PREFLIGHT_CHECK=true
+GENERATE_SOURCEMAP=false
+NODE_OPTIONS=--openssl-legacy-provider

@@ -3,36 +3,40 @@
   "WorkspaceRootPath": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\config\\api.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\config\\api.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\contexts\\AuthContext.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\contexts\\AuthContext.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\components\\StandalonePractice.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.css||{8B382828-6202-11D1-8870-0000F87579D2}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\components\\StandalonePractice.css||{8B382828-6202-11D1-8870-0000F87579D2}|"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\Header.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\components\\Header.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\index.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\index.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\STANDALONE_README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\STANDALONE_README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\.env||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\DEVELOPMENT_SETUP.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DEVELOPMENT_SETUP.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.local||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\.env.local||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.production||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\.env.production||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\.env||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\.env||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\contexts\\AuthContext.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\contexts\\AuthContext.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,111 +46,119 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "STANDALONE_README.md",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\STANDALONE_README.md",
-              "RelativeDocumentMoniker": "Frontend\\STANDALONE_README.md",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\STANDALONE_README.md",
-              "RelativeToolTip": "Frontend\\STANDALONE_README.md",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEAAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-10-20T14:26:56.735Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Header.tsx",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\Header.tsx",
-              "RelativeDocumentMoniker": "Frontend\\src\\components\\Header.tsx",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\Header.tsx",
-              "RelativeToolTip": "Frontend\\src\\components\\Header.tsx",
-              "ViewState": "AgIAACoAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2025-10-20T14:18:09.995Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "App.tsx",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\App.tsx",
-              "RelativeDocumentMoniker": "Frontend\\src\\App.tsx",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\App.tsx",
-              "RelativeToolTip": "Frontend\\src\\App.tsx",
-              "ViewState": "AgIAACQAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2025-10-20T14:17:59.19Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "StandalonePractice.css",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.css",
-              "RelativeDocumentMoniker": "Frontend\\src\\components\\StandalonePractice.css",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.css",
-              "RelativeToolTip": "Frontend\\src\\components\\StandalonePractice.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPgAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-10-20T14:17:52.172Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "StandalonePractice.tsx",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.tsx",
-              "RelativeDocumentMoniker": "Frontend\\src\\components\\StandalonePractice.tsx",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\components\\StandalonePractice.tsx",
-              "RelativeToolTip": "Frontend\\src\\components\\StandalonePractice.tsx",
-              "ViewState": "AgIAAIACAAAAAAAAAABBwIECAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2025-10-20T14:17:25.249Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 8,
               "Title": "AuthContext.tsx",
               "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\contexts\\AuthContext.tsx",
               "RelativeDocumentMoniker": "Frontend\\src\\contexts\\AuthContext.tsx",
               "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\contexts\\AuthContext.tsx",
               "RelativeToolTip": "Frontend\\src\\contexts\\AuthContext.tsx",
-              "ViewState": "AgIAAFsAAAAAAAAAAAAewGsAAAACAAAAAAAAAA==",
+              "ViewState": "AgIAAGkAAAAAAAAAAIBJwAEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2025-10-20T14:11:35.923Z",
+              "WhenOpened": "2025-10-20T18:15:50.094Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "api.ts",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\config\\api.ts",
-              "RelativeDocumentMoniker": "Frontend\\src\\config\\api.ts",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\config\\api.ts",
-              "RelativeToolTip": "Frontend\\src\\config\\api.ts",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2025-10-20T13:07:34.827Z",
+              "DocumentIndex": 7,
+              "Title": ".env",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\.env",
+              "RelativeDocumentMoniker": "Frontend\\.env",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\.env",
+              "RelativeToolTip": "Frontend\\.env",
+              "ViewState": "AgIAAAEAAAAAAAAAAABBwAIAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-10-20T18:14:27.574Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "index.html",
-              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\index.html",
-              "RelativeDocumentMoniker": "Frontend\\index.html",
-              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\index.html",
-              "RelativeToolTip": "Frontend\\index.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2025-10-20T13:06:58.773Z",
+              "Title": "package.json",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\package.json",
+              "RelativeDocumentMoniker": "Frontend\\package.json",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\package.json",
+              "RelativeToolTip": "Frontend\\package.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-20T18:10:52.647Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": ".env.production",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.production",
+              "RelativeDocumentMoniker": "Backend\\.env.production",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.production",
+              "RelativeToolTip": "Backend\\.env.production",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-10-20T18:04:14.425Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": ".env.local",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.local",
+              "RelativeDocumentMoniker": "Backend\\.env.local",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env.local",
+              "RelativeToolTip": "Backend\\.env.local",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-10-20T18:01:01.977Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DEVELOPMENT_SETUP.md",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\DEVELOPMENT_SETUP.md",
+              "RelativeDocumentMoniker": "DEVELOPMENT_SETUP.md",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\DEVELOPMENT_SETUP.md",
+              "RelativeToolTip": "DEVELOPMENT_SETUP.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-10-20T18:00:06.828Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": ".env",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env",
+              "RelativeDocumentMoniker": "Backend\\.env",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Backend\\.env",
+              "RelativeToolTip": "Backend\\.env",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-10-20T17:59:28.865Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "App.tsx",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\App.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\App.tsx",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\App.tsx",
+              "RelativeToolTip": "Frontend\\src\\App.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-10-20T17:57:40.971Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "index.tsx",
+              "DocumentMoniker": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\index.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\index.tsx",
+              "ToolTip": "C:\\Users\\Dylan.Money\\DEV\\Projects\\School\\Team13_LargeProject\\Frontend\\src\\index.tsx",
+              "RelativeToolTip": "Frontend\\src\\index.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-10-20T17:57:37.736Z"
             }
           ]
         }

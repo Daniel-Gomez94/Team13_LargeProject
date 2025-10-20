@@ -1,0 +1,19 @@
+﻿# Environment Variables for UCF Coding Practice
+NODE_ENV=production
+
+# DigitalOcean Managed MongoDB - replace with your actual connection string
+# Get from: DigitalOcean → Databases → Your MongoDB → Connection Details
+MONGODB_URI=mongodb://username:password@your-db-host:27017/ucf_coding_practice?authSource=admin&tls=true
+
+# JWT Secret - use a secure random string for production
+JWT_SECRET=your_super_secure_production_jwt_secret_key_here
+
+# Judge0 API Key for code execution
+RAPIDAPI_KEY=7f086cd239msh46b973a3ab8a5d8p12c5d8jsn6cb22918b98c
+
+# Server configuration for DigitalOcean droplet
+HOST=0.0.0.0
+PORT=5000
+
+# Your droplet's IP for CORS (replace with actual IP)
+CLIENT_ORIGIN=http://143.198.228.249:5000CLIENT_ORIGIN=http://localhost:3000

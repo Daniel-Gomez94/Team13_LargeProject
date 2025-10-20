@@ -1,0 +1,22 @@
+﻿# Environment Variables for UCF Coding Practice
+# Use this file to manage environment-specific settings
+
+# Development Environment Variables - FOR LOCAL TESTING
+NODE_ENV=development
+
+# MongoDB Atlas (free) - REPLACE WITH YOUR ATLAS CONNECTION STRING
+# Get from: https://cloud.mongodb.com → Connect → Connect your application
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ucf_coding_practice?retryWrites=true&w=majority
+
+# JWT Secret for development
+JWT_SECRET=ucf_coding_practice_jwt_secret_development_2024
+
+# Judge0 API Key for code execution
+RAPIDAPI_KEY=7f086cd239msh46b973a3ab8a5d8p12c5d8jsn6cb22918b98c
+
+# Server configuration for local development
+HOST=0.0.0.0
+PORT=5000
+
+# Frontend URL for CORS - local React dev server
+CLIENT_ORIGIN=http://localhost:3000

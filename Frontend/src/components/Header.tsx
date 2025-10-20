@@ -1,10 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
-  const location = useLocation();
 
   return (
     <header className="header">
@@ -13,31 +11,12 @@ const Header: React.FC = () => {
         UCF Computer Science Foundations Practice
         <span className="ucf-accent">??</span>
       </h1>
-      <div className="header-nav">
-        {/* Always show navigation links */}
-        <Link to="/standalone">
-          <button type="button">Standalone Practice</button>
-        </Link>
-        
-        {user ? (
-          <>
-            <Link to="/">
-              <button type="button">Dashboard</button>
-            </Link>
-            <span>Welcome, {user.username}!</span>
-            <button onClick={logout}>Logout</button>
-          </>
-        ) : location.pathname !== '/login' && location.pathname !== '/register' && (
-          <>
-            <Link to="/login">
-              <button type="button">Login</button>
-            </Link>
-            <Link to="/register">
-              <button type="button">Register</button>
-            </Link>
-          </>
-        )}
-      </div>
+      {user && (
+        <div className="header-nav">
+          <span>Welcome, {user.username}!</span>
+          <button onClick={logout}>Logout</button>
+        </div>
+      )}
     </header>
   );
 };

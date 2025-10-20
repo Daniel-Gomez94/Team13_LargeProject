@@ -5,7 +5,6 @@ import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
 import CodingPractice from './components/CodingPractice';
-import StandalonePractice from './components/StandalonePractice';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -19,7 +18,6 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/standalone" element={<StandalonePractice />} />
               <Route 
                 path="/" 
                 element={
