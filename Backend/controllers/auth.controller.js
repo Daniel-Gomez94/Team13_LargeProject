@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import Verification from "../models/Verification.js";
 import PasswordReset from "../models/PasswordReset.js";
 import { hash, randomToken, nowPlusMinutes } from "../utils/crypto.js";
+import { sendVerificationCode, sendPasswordReset } from "../utils/email.js";
 
 // helper
 const sign = (payload, exp=process.env.JWT_EXPIRES) =>
@@ -24,7 +25,7 @@ export const register = async (req, res, next) => {
       userId: user._id, codeHash: hash(code),
       expiresAt: nowPlusMinutes(15)
     });
-    // TODO: sendEmail(email, `Your code: ${code}`)  (stub for now)
+    await sendVerificationCode(email, code);
 
     const access = sign({ id: user._id, role: "user" });
     res.status(201).json({ user: { id: user._id, email, handle, verified: user.verified }, access, note: "PIN sent (dev: code in logs?)" });
@@ -72,7 +73,7 @@ export const requestPasswordReset = async (req, res, next) => {
       tokenHash: hash(token),
       expiresAt: nowPlusMinutes(30)
     });
-    // TODO: sendEmail(email, makeResetLink(token))
+    await sendPasswordReset(email, token);
     res.json({ ok: true });
   } catch (e) { next(e); }
 };
