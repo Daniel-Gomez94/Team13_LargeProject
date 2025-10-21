@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -50,23 +54,33 @@ const Login: React.FC = () => {
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <button
+            type='button'
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+                <VisibilityOffIcon />
+            ): (
+                <VisibilityIcon />
+            )}
+          </button>
         </div>
         
         {error && <div className="error-message">{error}</div>}
         
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={{display: 'flex', alignItems: 'center', margin: '0 auto'}}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
       
       <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        Don't have an account? <Link to="/register">Register here</Link>
+        Don't have an account? <Link to="/register" className='link'>Register here</Link>
       </p>
     </div>
   );
