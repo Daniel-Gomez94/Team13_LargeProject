@@ -44,7 +44,7 @@ app.get("/readyz", (_req, res) => {
 app.use("/api", api);
 
 /* -------- 404 + error handler -------- */
-app.use(notFound);
+//app.use(notFound);
 app.use(errorHandler);
 
 /* -------- Mongo connect & server start -------- */
