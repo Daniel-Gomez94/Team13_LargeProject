@@ -1,10 +1,10 @@
 // API Configuration for different environments
 const config = {
   development: {
-    API_BASE_URL: 'http://localhost:5000/api'
+    API_BASE_URL: 'http://localhost:4000/api'
   },
   production: {
-    API_BASE_URL: 'http://143.198.228.249:5000/api'
+    API_BASE_URL: 'http://143.244.191.232:4000/api' //used to be 143.198.228.249:5000
   }
 };
 

@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,8 +30,8 @@ const Register: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
       return;
     }
 
@@ -73,12 +77,23 @@ const Register: React.FC = () => {
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <button
+            type='button'
+            onClick={() => setShowPassword(!showPassword)}
+            id="showPassBtn"
+          >
+            {showPassword ? (
+                <VisibilityOffIcon />
+            ): (
+                <VisibilityIcon />
+            )}
+          </button>
         </div>
         
         <div className="form-group">
@@ -94,13 +109,13 @@ const Register: React.FC = () => {
         
         {error && <div className="error-message">{error}</div>}
         
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={{display: 'flex', alignItems: 'center', margin: '0 auto'}}>
           {loading ? 'Creating Account...' : 'Register'}
         </button>
       </form>
       
       <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        Already have an account? <Link to="/login">Login here</Link>
+        Already have an account? <Link to="/login" className='link'>Login here</Link>
       </p>
     </div>
   );
