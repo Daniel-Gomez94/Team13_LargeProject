@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchUserProfile = useCallback(async (authToken: string) => {
     try {
-      const response = await axios.get('/api/users/profile', {
+      const response = await axios.get('/api/users/me', {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       setUser(response.data);
@@ -54,10 +54,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      const { token: authToken, user: userData } = response.data;
-      
+      //const { token: authToken, user: userData } = response.data;
+      const authToken = response.data.access;
       setToken(authToken);
-      setUser(userData);
+      // const userData = {
+      //   username: response.data.user.handle,
+      //   email: response.data.user.email,
+      //   completedQuestions: [0], //random value for now
+      //   progress: null //random value for now
+      // };
+      setUser(response.data.user);
+      console.log(response.data.user);
       localStorage.setItem('token', authToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
     } catch (error: any) {
@@ -72,10 +79,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email,
         password
       });
-      const { token: authToken, user: userData } = response.data;
+      const authToken = response.data.access;
       
       setToken(authToken);
-      setUser(userData);
+      setUser(response.data.user);
       localStorage.setItem('token', authToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
     } catch (error: any) {
