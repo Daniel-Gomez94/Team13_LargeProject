@@ -1,0 +1,52 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "_id",
+      "createdAt",
+      "difficulty",
+      "isActive",
+      "prompt",
+      "sampleOutput",
+      "slug",
+      "title"
+    ],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "createdAt": {
+        "bsonType": "date"
+      },
+      "difficulty": {
+        "bsonType": "string"
+      },
+      "isActive": {
+        "bsonType": "bool"
+      },
+      "prompt": {
+        "bsonType": "string"
+      },
+      "sampleOutput": {
+        "bsonType": "string"
+      },
+      "slug": {
+        "bsonType": "string"
+      },
+      "title": {
+        "bsonType": "string"
+      }
+    },
+    
+        "_indexes": [
+      {
+        "name": "slug_1",
+        "key": { "slug": 1 },
+        "unique": true,
+        "description": "Ensures each challenge slug is unique"
+      }
+    ]
+    
+  }
+}
+

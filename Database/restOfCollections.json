@@ -1,0 +1,66 @@
+{
+  "collections": [
+    {
+      "name": "submissions", 
+      "schema": {
+        "_id": ["ObjectId", "number"],
+        "userId": ["ObjectId", "number"],
+        "challengeId": ["ObjectId", "number"],
+        "passed": "boolean"
+      },
+      "required": ["userId", "challengeId", "passed"],
+      "indexes": [
+        { "name": "_id_", "key": { "_id": 1 }, "unique": true },
+        { "name": "userId_1", "key": { "userId": 1 } },
+        { "name": "challengeId_1", "key": { "challengeId": 1 } },
+        { "name": "challenge_user", "key": { "challengeId": 1, "userId": 1 } },
+        { "name": "passed_1", "key": { "passed": 1 } }
+      ]
+    },
+    {
+      "name": "verification", 
+      "schema": {
+        "_id": "ObjectId",
+        "userId": ["ObjectId", "number", "null"],
+        "code": "string",
+        "createdAt": "Date",
+        "expiresAt": "Date"
+      },
+      "required": ["code", "createdAt", "expiresAt"],
+      "indexes": [
+        { "name": "_id_", "key": { "_id": 1 }, "unique": true },
+        { "name": "expiresAt_ttl", "key": { "expiresAt": 1 }, "ttl": true, "expireAfterSeconds": 0 },
+        { "name": "userId_1", "key": { "userId": 1 } },
+        { "name": "code_1", "key": { "code": 1 } },
+        { "name": "userId_1_code_1", "key": { "userId": 1, "code": 1 } }
+      ],
+      "notes": [
+        "Flow you described: backend inserts doc, emails PIN, user submits, backend checks and then flags user as verified.",
+        "You can simply delete the verification doc after success; TTL will remove expired ones."
+      ],
+      "security_recommendation": "Store a hash of the code instead of raw (e.g., field name 'codeHash'). If you switch, also change the index keys from 'code' to 'codeHash'."
+    },
+    {
+      "name": "passwordReset", 
+      "schema": {
+        "_id": "ObjectId",
+        "userId": ["ObjectId", "number"],
+        "token": "string",
+        "createdAt": "Date",
+        "expiresAt": "Date"
+      },
+      "required": ["userId", "token", "createdAt", "expiresAt"],
+      "indexes": [
+        { "name": "_id_", "key": { "_id": 1 }, "unique": true },
+        { "name": "expiresAt_ttl", "key": { "expiresAt": 1 }, "ttl": true, "expireAfterSeconds": 0 },
+        { "name": "userId_1", "key": { "userId": 1 } },
+        { "name": "token_1_unique", "key": { "token": 1 }, "unique": true }
+      ],
+      "notes": [
+        "Flow you described: backend emails a reset link carrying the token, user submits new password, backend updates password.",
+        "After a successful reset, you can delete the doc; TTL will clear the rest after expiry."
+      ],
+      "security_recommendation": "Prefer hashing the token (store 'tokenHash' only). If you switch, update the unique index to { tokenHash: 1 } and never store raw tokens."
+    }
+  ]
+}
