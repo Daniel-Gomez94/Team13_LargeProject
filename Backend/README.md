@@ -23,3 +23,11 @@ npm run dev
 ```
 
 The API will listen on port 4000 by default (`PORT` overrides). Health checks: `/healthz`, `/readyz`.
+
+## Testing
+
+```bash
+npm test
+```
+
+The Jest suite runs in Node ESM mode (`--experimental-vm-modules`). Tests rely on mocked dependencies and do not require external services.
