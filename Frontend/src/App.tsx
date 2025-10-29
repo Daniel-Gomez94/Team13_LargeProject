@@ -7,6 +7,9 @@ import Register from './components/Register';
 import CodingPractice from './components/CodingPractice';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
+import VerifyEmail from './components/VerifyEmail';
+import RequestPassReset from './components/RequestPassReset';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/request-pass-reset" element={<RequestPassReset />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route 
                 path="/" 
                 element={

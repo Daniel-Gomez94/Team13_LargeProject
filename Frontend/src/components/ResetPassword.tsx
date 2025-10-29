@@ -5,21 +5,31 @@ import { useAuth } from '../contexts/AuthContext';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
+const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  //const { resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!password || !confirmPassword) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('New password must be at least 8 characters long');
       return;
     }
 
@@ -27,8 +37,8 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      await login(email, password);
-      navigate('/');
+      //await resetPassword();
+      //navigate("/login");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -38,24 +48,13 @@ const Login: React.FC = () => {
 
   return (
     <div className="auth-form">
-      <h2>Login to Your Account</h2>
+      <h2>Reset Password</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="newPassword">New Password:</label>
           <input
             type={showPassword ? 'text' : 'password'}
-            id="password"
+            id="newPassword"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -63,6 +62,7 @@ const Login: React.FC = () => {
           <button
             type='button'
             onClick={() => setShowPassword(!showPassword)}
+            id="showPassBtn"
           >
             {showPassword ? (
                 <VisibilityOffIcon />
@@ -71,23 +71,26 @@ const Login: React.FC = () => {
             )}
           </button>
         </div>
-
-        <p style={{ marginTop: '20px' }}>
-          <Link to="/request-pass-reset" className='link'>Forgot Password?</Link>
-        </p>
+        
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirm Password:</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
         
         {error && <div className="error-message">{error}</div>}
         
         <button type="submit" disabled={loading} style={{display: 'flex', alignItems: 'center', margin: '0 auto'}}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Reseting...' : 'Reset'}
         </button>
       </form>
-      
-      <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        Don't have an account? <Link to="/register" className='link'>Register here</Link>
-      </p>
     </div>
   );
 };
 
-export default Login;
+export default ResetPassword;

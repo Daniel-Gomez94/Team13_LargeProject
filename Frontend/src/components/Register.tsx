@@ -40,7 +40,7 @@ const Register: React.FC = () => {
 
     try {
       await register(username, email, password);
-      navigate('/');
+      navigate('/'); //to /verify-email when that works
     } catch (err: any) {
       setError(err.message);
     } finally {
