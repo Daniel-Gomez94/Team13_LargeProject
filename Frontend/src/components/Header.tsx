@@ -13,7 +13,7 @@ const Header: React.FC = () => {
       </h1>
       {user && (
         <div className="header-nav">
-          <span>Welcome, {user.username}!</span>
+          <span>Welcome, {user.handle}!</span>
           <button onClick={logout}>Logout</button>
         </div>
       )}
