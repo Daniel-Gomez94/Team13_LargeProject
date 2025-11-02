@@ -1,1 +1,239 @@
+# Team13_LargeProject
+Large Project for COP 4331
 
+````````
+
+# UCF Coding Practice - MERN Stack
+
+A full-stack web application for UCF Computer Science Foundations practice problems, built with MongoDB, Express, React, and Node.js.
+
+## ?? Live Deployment
+
+**Production Server**: http://143.198.228.249:5000
+
+## Features
+
+- User authentication (register/login)
+- Multiple coding questions with C programming
+- Real-time code execution using Judge0 API
+- Progress tracking and question completion status
+- Responsive UCF-themed design
+- User progress persistence
+
+## Tech Stack
+
+- **Frontend**: React 18 with TypeScript
+- **Backend**: Node.js with Express
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT tokens
+- **Code Execution**: Judge0 API
+- **Styling**: Custom CSS with UCF theme
+- **Deployment**: PM2 Process Manager
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- MongoDB (local or MongoDB Atlas)
+- RapidAPI key for Judge0
+
+### Local Development
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/Daniel-Gomez94/Team13_LargeProject.git
+    cd Team13_LargeProject
+    ```
+
+2. Install all dependencies:
+    ```bash
+    npm run install-all
+    ```
+
+3. Configure environment variables:
+    ```bash
+    cd Backend
+    cp .env.example .env
+    # Edit .env with your configurations
+    ```
+
+4. Seed the database:
+    ```bash
+    node seedDatabase.js
+    ```
+
+5. Start development servers:
+    ```bash
+    cd ..
+    npm run dev
+    ```
+
+### Production Deployment
+
+For deployment on server 143.198.228.249:
+
+1. **Quick Deploy**:
+    ```bash
+    chmod +x deploy.sh
+    ./deploy.sh
+    ```
+
+2. **Manual Deploy**:
+    ```bash
+    npm run install-all
+    npm run build
+    pm2 start ecosystem.config.js --env production
+    ```
+
+See `DEPLOYMENT_GUIDE.md` for detailed deployment instructions.
+
+## Available Scripts
+
+### Development
+- `npm run dev` - Start both frontend and backend in development mode
+- `npm run server` - Start backend only
+- `npm run client` - Start frontend only
+
+### Production
+- `npm run build` - Build frontend for production
+- `npm run start` - Start production server
+- `npm run deploy` - Full deployment process
+- `./deploy.sh` - Automated deployment script
+
+### Utilities
+- `npm run install-all` - Install all dependencies
+
+## Environment Configuration
+
+### Development (.env)
+```env
+NODE_ENV=development
+MONGODB_URI=mongodb://localhost:27017/ucf_coding_practice
+JWT_SECRET=your_jwt_secret_key_here
+RAPIDAPI_KEY=your_rapidapi_key_here
+HOST=0.0.0.0
+PORT=5000
+```
+
+### Production
+```env
+NODE_ENV=production
+MONGODB_URI=mongodb://localhost:27017/ucf_coding_practice
+JWT_SECRET=super_secure_production_jwt_secret
+RAPIDAPI_KEY=your_rapidapi_key_here
+HOST=0.0.0.0
+PORT=5000
+```
+
+## Project Structure
+
+```
+Team13_LargeProject/
+??? Backend/                    # Express server
+?   ??? models/                 # MongoDB models
+?   ??? routes/                 # API endpoints
+?   ??? server.js              # Main server file
+?   ??? seedDatabase.js        # Database initialization
+?   ??? .env                   # Environment variables
+??? Frontend/                   # React application
+?   ??? src/
+?   ?   ??? components/        # React components
+?   ?   ??? contexts/          # React contexts
+?   ?   ??? types/             # TypeScript definitions
+?   ?   ??? config/            # Configuration files
+?   ?   ??? App.tsx            # Main App component
+?   ??? public/
+?   ??? build/                 # Production build (generated)
+??? ecosystem.config.js         # PM2 configuration
+??? deploy.sh                   # Deployment script
+??? DEPLOYMENT_GUIDE.md         # Detailed deployment guide
+??? package.json               # Root configuration
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /api/users/register` - Register new user
+- `POST /api/users/login` - User login
+- `GET /api/users/profile` - Get user profile (protected)
+
+### Questions
+- `GET /api/questions` - Get all questions
+- `GET /api/questions/:id` - Get specific question
+
+### Progress
+- `GET /api/progress` - Get user progress (protected)
+- `POST /api/progress/save` - Save user progress (protected)
+- `POST /api/progress/complete/:questionId` - Mark question as completed (protected)
+
+### Code Execution
+- `POST /api/code/run` - Execute C code
+
+## Deployment Server Details
+
+- **Server IP**: 143.198.228.249
+- **Application Port**: 5000
+- **Process Manager**: PM2
+- **Environment**: Production
+- **Database**: MongoDB (local)
+
+### Monitoring
+
+```bash
+# Check application status
+pm2 status
+
+# View logs
+pm2 logs ucf-coding-practice
+
+# Monitor resources
+pm2 monit
+
+# Restart application
+pm2 restart ucf-coding-practice
+```
+
+## Features
+
+### User Authentication
+- Secure JWT-based authentication
+- Password hashing with bcrypt
+- Protected routes and API endpoints
+
+### Code Practice
+- 4 comprehensive C programming questions
+- Real-time code execution and grading
+- Syntax highlighting support
+- Tab key support in code editor
+
+### Progress Tracking
+- Automatic progress saving
+- Visual progress indicators
+- Completed question tracking
+- Resume from where you left off
+
+### UCF Themed Design
+- Black and gold color scheme
+- Responsive design for mobile devices
+- UCF Knight mascot elements
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Team
+
+Team 13 - COP 4331 Large Project
+
+---
+
+?? **Live Demo**: [http://143.198.228.249:5000](http://143.198.228.249:5000)
