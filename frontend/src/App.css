@@ -566,22 +566,8 @@
   padding: 0.5em 1em;
   border-radius: 20px;
   font-weight: 700;
-  text-transform: uppercase;
   font-size: 0.9em;
-}
-
-.difficulty.easy {
-  background: #4CAF50;
-  color: white;
-}
-
-.difficulty.medium {
-  background: #FF9800;
-  color: white;
-}
-
-.difficulty.hard {
-  background: #F44336;
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   color: white;
 }
 
@@ -597,6 +583,57 @@
   color: var(--text-color);
   line-height: 1.6;
   margin: 0;
+}
+
+/* Expected Output Section */
+.expected-output-section {
+  background-color: var(--input-bg);
+  padding: 1.5em;
+  border-radius: 8px;
+  margin-bottom: 1.5em;
+  border: 2px solid var(--accent-color);
+}
+
+.expected-output-section h3 {
+  color: var(--accent-color);
+  margin: 0 0 1em 0;
+  font-size: 1.2em;
+}
+
+.expected-output-example {
+  background-color: var(--card-bg);
+  padding: 1em;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.example-label {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  font-size: 0.95em;
+}
+
+.expected-output-display {
+  background-color: var(--input-bg);
+  color: var(--accent-color);
+  padding: 1em;
+  border-radius: 6px;
+  border: 2px solid var(--border-color);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0.5em 0;
+  font-weight: 600;
+}
+
+.example-note {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9em;
+  margin-top: 0.8em;
+  font-style: italic;
 }
 
 .language-selector {
@@ -656,7 +693,7 @@
 
 .code-editable {
   width: 100%;
-  min-height: 150px;
+  min-height: 60px;
   padding: 1em;
   border: none;
   background-color: var(--input-bg);
@@ -664,10 +701,11 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
   line-height: 1.5;
-  resize: vertical;
+  resize: none;
   box-sizing: border-box;
   outline: none;
   display: block !important;
+  overflow: hidden;
 }
 
 .code-editable:focus {
@@ -681,8 +719,39 @@
   background-color: rgba(128, 128, 128, 0.1);
 }
 
+/* Expected Output Hint - Compact Version */
+.expected-output-hint {
+  background-color: var(--input-bg);
+  padding: 0.8em 1em;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  border-left: 4px solid var(--accent-color);
+  font-size: 0.95em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.expected-output-hint strong {
+  color: var(--accent-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.expected-output-hint code {
+  background-color: var(--card-bg);
+  color: var(--accent-color);
+  padding: 0.3em 0.6em;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* Remove old single textarea styling */
-.code-editor textarea {
+code-editor textarea {
   display: none;
 }
 

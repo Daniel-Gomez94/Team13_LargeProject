@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react';
+import VerifyEmail from './VerifyEmail';
 
 function Register() {
 
@@ -18,6 +19,8 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showVerification, setShowVerification] = useState(false);
+    const [registeredEmail, setRegisteredEmail] = useState('');
 
     async function doRegister(event: any): Promise<void> {
         event.preventDefault();
@@ -29,14 +32,20 @@ function Register() {
         const trimmedPassword = password.trim();
         const trimmedConfirmPassword = confirmPassword.trim();
 
+        console.log('🔍 Registration attempt started');
+        console.log('Environment mode:', import.meta.env.MODE);
+        console.log('Is development:', import.meta.env.MODE === 'development');
+
         // Validation
         if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPassword || !trimmedConfirmPassword) {
             setMessage('All fields are required');
+            console.error('❌ Validation failed: Missing fields');
             return;
         }
 
         if (trimmedPassword !== trimmedConfirmPassword) {
             setMessage('Passwords do not match');
+            console.error('❌ Validation failed: Password mismatch');
             return;
         }
 
@@ -44,6 +53,7 @@ function Register() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(trimmedEmail)) {
             setMessage('Please enter a valid email address');
+            console.error('❌ Validation failed: Invalid email format');
             return;
         }
 
@@ -55,16 +65,40 @@ function Register() {
         };
         var js = JSON.stringify(obj);
 
+        const apiUrl = buildPath('api/register');
+        console.log('📡 API URL:', apiUrl);
+        console.log('📤 Request payload:', { ...obj, password: '***' }); // Hide password in logs
+
         try {
-            const response = await fetch(buildPath('api/register'),
+            console.log('⏳ Sending registration request...');
+            const response = await fetch(apiUrl,
                 { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
-            var res = JSON.parse(await response.text());
+            console.log('📥 Response status:', response.status);
+            console.log('📥 Response ok:', response.ok);
+            console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+
+            const responseText = await response.text();
+            console.log('📥 Raw response text:', responseText);
+
+            var res = JSON.parse(responseText);
+            console.log('📥 Parsed response:', res);
 
             if (res.error && res.error.length > 0) {
+                console.error('❌ Registration failed:', res.error);
                 setMessage(res.error);
             }
+            else if (res.requiresVerification) {
+                console.log('✅ Registration successful - requires verification');
+                setMessage('Registration successful! Check your email for the verification code.');
+                setRegisteredEmail(trimmedEmail);
+                // Show verification screen after a short delay
+                setTimeout(() => {
+                    setShowVerification(true);
+                }, 1500);
+            }
             else {
+                console.log('✅ Registration successful - no verification required');
                 setMessage('Registration successful! Redirecting to login...');
                 setTimeout(() => {
                     window.location.href = '/';
@@ -72,10 +106,33 @@ function Register() {
             }
         }
         catch (error: any) {
+            console.error('💥 Registration exception:', error);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
             setMessage('Registration failed: ' + error.toString());
-            console.error('Registration error:', error);
         }
-    };
+    }
+
+    function handleVerificationComplete(): void {
+        window.location.href = '/';
+    }
+
+    function handleBackToRegister(): void {
+        setShowVerification(false);
+        setMessage('');
+    }
+
+    // Show verification screen if needed
+    if (showVerification) {
+        return (
+            <VerifyEmail 
+                email={registeredEmail} 
+                onVerificationComplete={handleVerificationComplete}
+                onBack={handleBackToRegister}
+            />
+        );
+    }
 
     return (
         <div id="registerDiv" className="auth-container">
@@ -183,7 +240,7 @@ function Register() {
                     <span className="link-icon">🔑</span>
                     Log In
                 </a>
-            </div>
+            </div> 
         </div>
     );
 };

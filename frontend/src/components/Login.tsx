@@ -108,6 +108,12 @@ function Login() {
                     />
                 </div>
 
+                <div style={{ textAlign: 'right', marginTop: '-10px', marginBottom: '15px' }}>
+                    <a href="/forgot-password" className="auth-link" style={{ fontSize: '0.9em' }}>
+                        Forgot Password?
+                    </a>
+                </div>
+
                 <button 
                     type="submit" 
                     id="loginButton" 

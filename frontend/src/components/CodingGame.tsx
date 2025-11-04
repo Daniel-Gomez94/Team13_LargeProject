@@ -37,9 +37,8 @@ function CodingGame() {
         const today = new Date().toDateString();
         
         // Use date to pick a challenge (cycles through challenges)
-        const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-        const challengeIndex = dayOfYear % challenges.length;
-        const dailyChallenge = challenges[challengeIndex];
+        // For now, set to challenge 2 (Battle Game - Queues)
+        const dailyChallenge = challenges[1]; // Index 1 = Challenge ID 2
         
         setChallenge(dailyChallenge);
         // Initialize with just the editable portion (empty function body)
@@ -67,6 +66,15 @@ function CodingGame() {
                 console.error('Error loading attempts:', error);
             }
         }
+        
+        // Auto-resize textarea after initial load
+        setTimeout(() => {
+            const textarea = document.querySelector('.code-editable') as HTMLTextAreaElement;
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+        }, 100);
     };
 
     useEffect(() => {
@@ -102,7 +110,9 @@ function CodingGame() {
             const results = [];
 
             // Reconstruct the full code
-            const codeTop = challenge!.starterCode.split('\n').slice(0, 11).join('\n');
+            const starterLines = challenge!.starterCode.split('\n');
+            const editableStart = challenge!.editableRegion?.start || 11;
+            const codeTop = starterLines.slice(0, editableStart).join('\n');
             const codeBottom = '}';
             const fullUserCode = codeTop + '\n' + code + '\n' + codeBottom;
 
@@ -256,8 +266,8 @@ function CodingGame() {
             <div className="challenge-header">
                 <h2>{challenge.title}</h2>
                 <div className="challenge-meta">
-                    <span className={`difficulty ${challenge.difficulty.toLowerCase()}`}>
-                        {challenge.difficulty}
+                    <span className="difficulty">
+                        Challenge Type: {challenge.type}
                     </span>
                     <span className="attempts-counter">
                         Attempts: {attemptsUsed}/{MAX_ATTEMPTS}
@@ -274,28 +284,39 @@ function CodingGame() {
             </div>
 
             <div className="challenge-description">
-                <p>{challenge.description}</p>
+                <p style={{ whiteSpace: 'pre-line' }}>{challenge.description}</p>
             </div>
 
             <div className="code-editor">
                 <div className="code-editor-wrapper">
                     <div className="code-readonly-top">
-                        {challenge.starterCode.split('\n').slice(0, 11).join('\n')}
+                        {challenge.starterCode.split('\n').slice(0, challenge.editableRegion?.start || 11).join('\n')}
                     </div>
                     <textarea
                         className="code-editable"
                         value={code}
-                        onChange={(e) => setCode(e.target.value)}
+                        onChange={(e) => {
+                            setCode(e.target.value);
+                            // Auto-resize textarea
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                        }}
                         placeholder="    // Your code here\n    return NULL;"
                         spellCheck={false}
                         disabled={hasCompletedToday || attemptsUsed >= MAX_ATTEMPTS}
-                        rows={3}
+                        style={{ minHeight: '60px', overflow: 'hidden' }}
                     />
                     <div className="code-readonly-bottom">
                         {'}'}
                     </div>
                 </div>
             </div>
+
+            {challenge.testCases.length > 0 && (
+                <div className="expected-output-hint">
+                    <strong>Expected Output Example:</strong> <code>{challenge.testCases[0].expected}</code>
+                </div>
+            )}
 
             <div className="button-group">
                 <button 
