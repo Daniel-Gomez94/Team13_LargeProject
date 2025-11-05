@@ -1,0 +1,29 @@
+{
+  "name": "ucf-coding-practice",
+  "version": "1.0.0",
+  "description": "UCF Coding Practice Platform",
+  "scripts": {
+    "install-all": "cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd frontend && npm run dev",
+    "server": "cd backend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test -- --run",
+    "test:backend": "cd backend && npm test",
+    "test:coverage": "npm run test:coverage:frontend && npm run test:coverage:backend",
+    "test:coverage:frontend": "cd frontend && npm run test:coverage",
+    "test:coverage:backend": "cd backend && npm run test:coverage"
+  },
+  "keywords": [
+    "education",
+    "coding",
+    "practice",
+    "ucf"
+  ],
+  "author": "Team 13",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

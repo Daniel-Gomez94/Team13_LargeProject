@@ -1,9 +1,13 @@
-﻿const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const sgMail = require('@sendgrid/mail');
-const crypto = require('crypto');
+﻿import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import bcrypt from 'bcrypt';
+import sgMail from '@sendgrid/mail';
+import crypto from 'crypto';
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -19,10 +23,9 @@ let users = [
 ];
 
 let cards = [];
+let cardList = []; // Add cardList for in-memory storage
 let nextUserId = 3; // For in-memory user ID generation
 let verificationCodes = new Map(); // Store verification codes temporarily
-
-require('dotenv').config();
 
 // SendGrid configuration
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
@@ -120,7 +123,6 @@ async function sendPasswordResetEmail(email, code) {
 
 // MongoDB connection
 const url = process.env.MONGODB_URL;
-const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 
 let db;
@@ -1313,4 +1315,7 @@ app.use((req, res, next) => {
 console.log('Server starting on port 5000...');
 console.log('Test credentials: email=test@test.com, password=test');
 
-app.listen(5000); // start Node + Express server on port 5000
+const server = app.listen(5000);
+
+// Export for testing
+export { app, server };
