@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'verify_email_page.dart';
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -14,6 +18,102 @@ class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  
+  String _errorMessage = '';
+  bool _isLoading = false;
+
+  Future<void> _register() async {
+    // Validate inputs
+    if (_firstNameController.text.trim().isEmpty ||
+        _lastNameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty ||
+        _confirmPasswordController.text.trim().isEmpty) {
+      setState(() {
+        _errorMessage = 'All fields are required';
+      });
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      setState(() {
+        _errorMessage = 'Password must be at least 6 characters';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse("http://159.65.36.255/api/register"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'firstName': _firstNameController.text.trim(),
+          'lastName': _lastNameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['error'] == null || data['error'].isEmpty) {
+          // Registration successful - navigate to verification page
+          print('Registration successful! Verification required.');
+          
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VerifyEmailPage(
+                  email: _emailController.text.trim(),
+                ),
+              ),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = data['error'];
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _errorMessage = data['error'] ?? 'Registration failed';
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed. Please try again.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Network error. Please check your connection.';
+      });
+      print('Registration error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -31,6 +131,11 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   void dispose() {
     _animationController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -74,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage>
           children: [
             _buildAnimatedSwords(),
             const GradientText(
-              text: 'Welcome Back, Knight!',
+              text: 'Join the Knights!',
               style: AppTheme.headingStyle,
               textAlign: TextAlign.center,
             ),
@@ -91,6 +196,15 @@ class _RegisterPageState extends State<RegisterPage>
             const SizedBox(height: 24),
             _buildRegisterButton(),
             const SizedBox(height: 18),
+            if (_errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             const Divider(color: AppTheme.primaryGold, thickness: 2),
             const SizedBox(height: 18),
             _buildLoginSection(),
@@ -124,6 +238,7 @@ class _RegisterPageState extends State<RegisterPage>
         const Text('👤 FIRST NAME', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _firstNameController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter your first name'),
         ),
@@ -138,6 +253,7 @@ class _RegisterPageState extends State<RegisterPage>
         const Text('👤 LAST NAME', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _lastNameController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter your last name'),
         ),
@@ -152,8 +268,10 @@ class _RegisterPageState extends State<RegisterPage>
         const Text('📧 EMAIL ADDRESS', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _emailController,
           style: AppTheme.defaultStyle,
-          decoration: AppTheme.inputDecoration('knight.ucf.edu'),
+          decoration: AppTheme.inputDecoration('knight@ucf.edu'),
+          keyboardType: TextInputType.emailAddress,
         ),
       ],
     );
@@ -166,6 +284,7 @@ class _RegisterPageState extends State<RegisterPage>
         const Text('🔒 PASSWORD', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _passwordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
           decoration: AppTheme.inputDecoration('Create a strong password'),
@@ -181,6 +300,7 @@ class _RegisterPageState extends State<RegisterPage>
         const Text('🔒 CONFIRM PASSWORD', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _confirmPasswordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
           decoration: AppTheme.inputDecoration('Re-enter your password'),
@@ -192,9 +312,18 @@ class _RegisterPageState extends State<RegisterPage>
   Widget _buildRegisterButton() {
     return GlowingContainer(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: _isLoading ? null : _register,
         style: AppTheme.primaryButtonStyle,
-        child: const Text('✨ REGISTER', style: AppTheme.buttonTextStyle),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.black),
+                ),
+              )
+            : const Text('✨ REGISTER', style: AppTheme.buttonTextStyle),
       ),
     );
   }
@@ -211,7 +340,12 @@ class _RegisterPageState extends State<RegisterPage>
           textAlign: TextAlign.center,
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          },
           style: AppTheme.secondaryButtonStyle,
           child: const Text('🔑 Log In', style: AppTheme.buttonTextStyle),
         ),

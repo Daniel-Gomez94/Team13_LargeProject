@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'register_page.dart';
+import 'leaderboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +18,72 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = '';
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse("http://159.65.36.255/api/login"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _loginController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['error'] == null || data['error'].isEmpty) {
+          // Login successful - navigate to leaderboard
+          print('Login successful! User ID: ${data['id']}');
+          
+          // Navigate to leaderboard page
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LeaderboardPage(
+                  userId: data['id'] is String ? int.parse(data['id']) : data['id'],
+                  userName: '${data['firstName']} ${data['lastName']}'.trim(),
+                ),
+              ),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = data['error'];
+          });
+        }
+      } else if (response.statusCode == 403) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _errorMessage = data['error'];
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Login failed. Please try again.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Network error. Please check your connection.';
+      });
+      print('Login error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -31,6 +101,8 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     _animationController.dispose();
+    _loginController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -85,6 +157,15 @@ class _LoginPageState extends State<LoginPage>
             const SizedBox(height: 24),
             _buildLoginButton(),
             const SizedBox(height: 18),
+            if (_errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             const Divider(color: AppTheme.primaryGold, thickness: 2),
             const SizedBox(height: 18),
             _buildRegisterSection(),
@@ -118,8 +199,10 @@ class _LoginPageState extends State<LoginPage>
         const Text('📧 EMAIL ADDRESS', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _loginController,
           style: AppTheme.defaultStyle,
-          decoration: AppTheme.inputDecoration('knight.ucf.edu'),
+          decoration: AppTheme.inputDecoration('knight@ucf.edu'),
+          keyboardType: TextInputType.emailAddress,
         ),
       ],
     );
@@ -132,6 +215,7 @@ class _LoginPageState extends State<LoginPage>
         const Text('🔒 PASSWORD', style: AppTheme.labelStyle),
         const SizedBox(height: 8),
         TextField(
+          controller: _passwordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
           decoration: AppTheme.inputDecoration('Enter your password'),
@@ -143,9 +227,18 @@ class _LoginPageState extends State<LoginPage>
   Widget _buildLoginButton() {
     return GlowingContainer(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: _isLoading ? null : _login,
         style: AppTheme.primaryButtonStyle,
-        child: const Text('⚔️ LOGIN', style: AppTheme.buttonTextStyle),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.black),
+                ),
+              )
+            : const Text('⚔️ LOGIN', style: AppTheme.buttonTextStyle),
       ),
     );
   }
@@ -162,7 +255,12 @@ class _LoginPageState extends State<LoginPage>
           textAlign: TextAlign.center,
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RegisterPage()),
+            );
+          },
           style: AppTheme.secondaryButtonStyle,
           child: const Text('✨ Register Now', style: AppTheme.buttonTextStyle),
         ),
