@@ -1,17 +1,17 @@
-﻿import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import bcrypt from 'bcrypt';
-import sgMail from '@sendgrid/mail';
-import crypto from 'crypto';
-import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-
-dotenv.config();
+﻿const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const sgMail = require('@sendgrid/mail');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+//New just added
+require('dotenv').config({ path: '/var/largeProjectServer/.env' });
+
 
 // Salt rounds for bcrypt (higher = more secure but slower)
 const SALT_ROUNDS = 10;
@@ -23,9 +23,22 @@ let users = [
 ];
 
 let cards = [];
-let cardList = []; // Add cardList for in-memory storage
 let nextUserId = 3; // For in-memory user ID generation
 let verificationCodes = new Map(); // Store verification codes temporarily
+
+// ── .env loader ────────────────────────────────────────────────────────────────
+// Load .env from an absolute path so the service finds it no matter where it runs
+const path = require('path');
+const ENV_PATH = '/var/largeProjectServer/.env';
+require('dotenv').config({ path: ENV_PATH });
+
+// Startup diagnostics
+console.log('CWD:', process.cwd());
+console.log('ENV loaded from:', ENV_PATH);
+console.log('SENDGRID key present?', !!process.env.SENDGRID_API_KEY);
+console.log('SENDGRID key suffix (server):', process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.slice(-8) : '(none)');
+console.log('EMAIL_FROM (server):', process.env.EMAIL_FROM);
+
 
 // SendGrid configuration
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
@@ -33,9 +46,9 @@ const EMAIL_FROM = process.env.EMAIL_FROM;
 
 if (SENDGRID_API_KEY) {
     sgMail.setApiKey(SENDGRID_API_KEY);
-    console.log('✓ SendGrid API configured');
+    console.log('âœ“ SendGrid API configured');
 } else {
-    console.log('⚠️  SendGrid API key not configured. Email verification will not work.');
+    console.log('âš ï¸  SendGrid API key not configured. Email verification will not work.');
     console.log('Please set SENDGRID_API_KEY in your .env file');
 }
 
@@ -70,8 +83,8 @@ async function sendVerificationEmail(email, code) {
     };
 
     try {
-        await sgMail.send(msg);
-        console.log('Verification email sent to:', email);
+        const [resp] = await sgMail.send(msg);
+        console.log('Verification email sent to:', email, 'status:', resp?.statusCode);
         return true;
     } catch (error) {
         console.error('Error sending email:', error);
@@ -81,6 +94,7 @@ async function sendVerificationEmail(email, code) {
         return false;
     }
 }
+
 
 // Send password reset email using SendGrid
 async function sendPasswordResetEmail(email, code) {
@@ -95,7 +109,7 @@ async function sendPasswordResetEmail(email, code) {
         subject: 'Reset Your Password - Knights Coding Challenge',
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #4a5568;">⚔️ Knights Coding Challenge</h2>
+                <h2 style="color: #4a5568;">âš”ï¸ Knights Coding Challenge</h2>
                 <p>We received a request to reset your password.</p>
                 <div style="background-color: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                     <p style="margin: 0; font-size: 14px; color: #718096;">Your password reset code is:</p>
@@ -103,7 +117,7 @@ async function sendPasswordResetEmail(email, code) {
                 </div>
                 <p style="color: #718096; font-size: 14px;">This code will expire in 15 minutes.</p>
                 <p style="color: #718096; font-size: 14px;">If you didn't request a password reset, please ignore this email and your password will remain unchanged.</p>
-                <p style="color: #e53e3e; font-size: 14px; font-weight: bold;">🔒 Never share this code with anyone!</p>
+                <p style="color: #e53e3e; font-size: 14px; font-weight: bold;">ðŸ”’ Never share this code with anyone!</p>
             </div>
         `
     };
@@ -123,6 +137,7 @@ async function sendPasswordResetEmail(email, code) {
 
 // MongoDB connection
 const url = process.env.MONGODB_URL;
+const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 
 let db;
@@ -134,30 +149,30 @@ async function connectDB() {
     
     try {
         await client.connect();
-        console.log('✓ MongoDB client connected');
+        console.log('âœ“ MongoDB client connected');
         
         db = client.db('LargeProject');
-        console.log('✓ Database selected: LargeProject');
+        console.log('âœ“ Database selected: LargeProject');
         
         // Verify connection by pinging
         await db.command({ ping: 1 });
-        console.log('✓ Database ping successful');
+        console.log('âœ“ Database ping successful');
         
         // List collections to verify database access
         const collections = await db.listCollections().toArray();
-        console.log('✓ Available collections:', collections.map(c => c.name).join(', ') || 'none');
+        console.log('âœ“ Available collections:', collections.map(c => c.name).join(', ') || 'none');
         
         // Count documents
         const userCount = await db.collection('Users').countDocuments();
         const cardCount = await db.collection('Cards').countDocuments();
-        console.log(`✓ Users: ${userCount}, Cards: ${cardCount}`);
+        console.log(`âœ“ Users: ${userCount}, Cards: ${cardCount}`);
         
     } catch (error) {
-        console.error('✗ MongoDB connection error:');
+        console.error('âœ— MongoDB connection error:');
         console.error('  Error type:', error.name);
         console.error('  Error message:', error.message);
         console.error('  Full error:', error);
-        console.log('✗ Falling back to in-memory storage');
+        console.log('âœ— Falling back to in-memory storage');
         db = null;
     }
 }
@@ -361,35 +376,35 @@ app.post('/api/register', async (req, res, next) => {
 
     // Validation
     if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPassword) {
-        console.log('❌ Validation failed: Missing fields');
+        console.log('âŒ Validation failed: Missing fields');
         return res.status(400).json({ error: 'All fields are required' });
     }
 
     // Password strength validation (optional but recommended)
     if (trimmedPassword.length < 6) {
-        console.log('❌ Validation failed: Password too short');
+        console.log('âŒ Validation failed: Password too short');
         return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
     try {
-        console.log('⏳ Hashing password...');
+        console.log('â³ Hashing password...');
         // Hash the password
         const hashedPassword = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
-        console.log('✅ Password hashed successfully');
+        console.log('âœ… Password hashed successfully');
         
         if (db) {
-            console.log('📊 Using MongoDB');
+            console.log('ðŸ“Š Using MongoDB');
             // Check if email already exists in MongoDB (case-insensitive)
             const existingUser = await db.collection('Users').findOne({ 
                 Email: { $regex: new RegExp(`^${trimmedEmail}$`, 'i') } 
             });
             
             if (existingUser) {
-                console.log('❌ Email already exists:', trimmedEmail);
+                console.log('âŒ Email already exists:', trimmedEmail);
                 return res.status(400).json({ error: 'Email already registered' });
             }
 
-            console.log('✅ Email available');
+            console.log('âœ… Email available');
 
             // Get the next UserID - ensure it's a number
             const lastUser = await db.collection('Users').find().sort({ UserID: -1 }).limit(1).toArray();
@@ -403,7 +418,7 @@ app.post('/api/register', async (req, res, next) => {
                 }
             }
 
-            console.log('📝 New UserID:', newUserId);
+            console.log('ðŸ“ New UserID:', newUserId);
 
             // Create new user - ensure UserID is a number
             const newUser = {
@@ -416,17 +431,17 @@ app.post('/api/register', async (req, res, next) => {
                 CreatedAt: new Date()
             };
 
-            console.log('💾 Storing unverified user...');
+            console.log('ðŸ’¾ Storing unverified user...');
             // Store user temporarily (will be activated after verification)
             await db.collection('UnverifiedUsers').insertOne(newUser);
-            console.log('✅ Unverified user stored');
+            console.log('âœ… Unverified user stored');
             
             // Generate and send verification code
             const verificationCode = generateVerificationCode();
             const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
             
-            console.log('🔐 Generated verification code:', verificationCode);
-            console.log('⏰ Code expires at:', codeExpiry);
+            console.log('ðŸ” Generated verification code:', verificationCode);
+            console.log('â° Code expires at:', codeExpiry);
 
             await db.collection('VerificationCodes').insertOne({
                 Email: trimmedEmail,
@@ -434,30 +449,30 @@ app.post('/api/register', async (req, res, next) => {
                 ExpiresAt: codeExpiry,
                 CreatedAt: new Date()
             });
-            console.log('✅ Verification code stored');
+            console.log('âœ… Verification code stored');
 
             // Send verification email
-            console.log('📧 Attempting to send verification email...');
+            console.log('ðŸ“§ Attempting to send verification email...');
             const emailSent = await sendVerificationEmail(trimmedEmail, verificationCode);
             
             if (!emailSent) {
-                console.log('❌ Email sending failed - cleaning up...');
+                console.log('âŒ Email sending failed - cleaning up...');
                 // Clean up if email fails
                 await db.collection('UnverifiedUsers').deleteOne({ Email: trimmedEmail });
                 await db.collection('VerificationCodes').deleteOne({ Email: trimmedEmail });
                 return res.status(500).json({ error: 'Failed to send verification email. Please try again.' });
             }
 
-            console.log('✅ Verification email sent successfully');
+            console.log('âœ… Verification email sent successfully');
             console.log('User registered (pending verification):', { email: trimmedEmail, userId: newUserId });
             console.log('=== REGISTRATION REQUEST END (SUCCESS) ===');
             return res.status(200).json({ error: '', requiresVerification: true });
         } else {
-            console.log('💾 Using in-memory storage');
+            console.log('ðŸ’¾ Using in-memory storage');
             // Check if email already exists in in-memory storage
             const existingUser = users.find(user => user.Email.toLowerCase() === trimmedEmail);
             if (existingUser) {
-                console.log('❌ Email already exists (in-memory):', trimmedEmail);
+                console.log('âŒ Email already exists (in-memory):', trimmedEmail);
                 return res.status(400).json({ error: 'Email already registered' });
             }
 
@@ -465,7 +480,7 @@ app.post('/api/register', async (req, res, next) => {
             const verificationCode = generateVerificationCode();
             const codeExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
             
-            console.log('🔐 Generated verification code (in-memory):', verificationCode);
+            console.log('ðŸ” Generated verification code (in-memory):', verificationCode);
 
             verificationCodes.set(trimmedEmail, {
                 code: verificationCode,
@@ -481,23 +496,23 @@ app.post('/api/register', async (req, res, next) => {
             });
 
             // Send verification email
-            console.log('📧 Attempting to send verification email (in-memory)...');
+            console.log('ðŸ“§ Attempting to send verification email (in-memory)...');
             const emailSent = await sendVerificationEmail(trimmedEmail, verificationCode);
             
             if (!emailSent) {
-                console.log('❌ Email sending failed (in-memory) - cleaning up...');
+                console.log('âŒ Email sending failed (in-memory) - cleaning up...');
                 verificationCodes.delete(trimmedEmail);
                 return res.status(500).json({ error: 'Failed to send verification email. Please try again.' });
             }
 
-            console.log('✅ Verification email sent successfully (in-memory)');
+            console.log('âœ… Verification email sent successfully (in-memory)');
             console.log('User registered (pending verification, in-memory):', { email: trimmedEmail });
             console.log('=== REGISTRATION REQUEST END (SUCCESS) ===');
             return res.status(200).json({ error: '', requiresVerification: true });
         }
     } catch (e) {
         error = e.toString();
-        console.error('💥 Registration error:', error);
+        console.error('ðŸ’¥ Registration error:', error);
         console.error('Error stack:', e.stack);
         console.log('=== REGISTRATION REQUEST END (ERROR) ===');
     }
@@ -689,37 +704,37 @@ app.post('/api/forgot-password', async (req, res, next) => {
     const trimmedEmail = email?.trim().toLowerCase();
 
     if (!trimmedEmail) {
-        console.log('❌ Validation failed: Email is required');
+        console.log('âŒ Validation failed: Email is required');
         return res.status(400).json({ error: 'Email is required' });
     }
 
-    console.log('📧 Processing forgot password for:', trimmedEmail);
+    console.log('ðŸ“§ Processing forgot password for:', trimmedEmail);
 
     try {
         if (db) {
-            console.log('📊 Using MongoDB');
+            console.log('ðŸ“Š Using MongoDB');
             // Check if user exists
             const user = await db.collection('Users').findOne({
                 Email: { $regex: new RegExp(`^${trimmedEmail}$`, 'i') }
             });
 
             if (!user) {
-                console.log('❌ User not found:', trimmedEmail);
+                console.log('âŒ User not found:', trimmedEmail);
                 return res.status(404).json({ error: 'No account found with this email address' });
             }
 
-            console.log('✅ User found:', user.Email);
+            console.log('âœ… User found:', user.Email);
 
             // Delete any existing password reset codes for this email
             const deleteResult = await db.collection('PasswordResetCodes').deleteMany({ Email: trimmedEmail });
-            console.log('🗑️ Deleted old reset codes:', deleteResult.deletedCount);
+            console.log('ðŸ—‘ï¸ Deleted old reset codes:', deleteResult.deletedCount);
 
             // Generate password reset code
             const resetCode = generateVerificationCode();
             const codeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-            console.log('🔐 Generated reset code:', resetCode);
-            console.log('⏰ Code expires at:', codeExpiry);
+            console.log('ðŸ” Generated reset code:', resetCode);
+            console.log('â° Code expires at:', codeExpiry);
 
             await db.collection('PasswordResetCodes').insertOne({
                 Email: trimmedEmail,
@@ -727,37 +742,37 @@ app.post('/api/forgot-password', async (req, res, next) => {
                 ExpiresAt: codeExpiry,
                 CreatedAt: new Date()
             });
-            console.log('✅ Reset code stored in database');
+            console.log('âœ… Reset code stored in database');
 
             // Send password reset email
-            console.log('📧 Attempting to send password reset email...');
+            console.log('ðŸ“§ Attempting to send password reset email...');
             const emailSent = await sendPasswordResetEmail(trimmedEmail, resetCode);
 
             if (!emailSent) {
-                console.log('❌ Email sending failed');
+                console.log('âŒ Email sending failed');
                 return res.status(500).json({ error: 'Failed to send reset email. Please try again.' });
             }
 
-            console.log('✅ Password reset email sent successfully');
+            console.log('âœ… Password reset email sent successfully');
             console.log('=== FORGOT PASSWORD REQUEST END (SUCCESS) ===');
             return res.status(200).json({ error: '', success: true });
         } else {
-            console.log('💾 Using in-memory storage');
+            console.log('ðŸ’¾ Using in-memory storage');
             // In-memory
             const user = users.find(u => u.Email.toLowerCase() === trimmedEmail);
 
             if (!user) {
-                console.log('❌ User not found (in-memory):', trimmedEmail);
+                console.log('âŒ User not found (in-memory):', trimmedEmail);
                 return res.status(404).json({ error: 'No account found with this email address' });
             }
 
-            console.log('✅ User found (in-memory):', user.Email);
+            console.log('âœ… User found (in-memory):', user.Email);
 
             // Generate reset code
             const resetCode = generateVerificationCode();
             const codeExpiry = Date.now() + 15 * 60 * 1000;
 
-            console.log('🔐 Generated reset code (in-memory):', resetCode);
+            console.log('ðŸ” Generated reset code (in-memory):', resetCode);
 
             // Store in verification codes map with special prefix
             verificationCodes.set('reset_' + trimmedEmail, {
@@ -765,24 +780,24 @@ app.post('/api/forgot-password', async (req, res, next) => {
                 expiry: codeExpiry,
                 email: trimmedEmail
             });
-            console.log('✅ Reset code stored in memory');
+            console.log('âœ… Reset code stored in memory');
 
             // Send password reset email
-            console.log('📧 Attempting to send password reset email (in-memory)...');
+            console.log('ðŸ“§ Attempting to send password reset email (in-memory)...');
             const emailSent = await sendPasswordResetEmail(trimmedEmail, resetCode);
 
             if (!emailSent) {
-                console.log('❌ Email sending failed (in-memory)');
+                console.log('âŒ Email sending failed (in-memory)');
                 return res.status(500).json({ error: 'Failed to send reset email. Please try again.' });
             }
 
-            console.log('✅ Password reset email sent successfully (in-memory)');
+            console.log('âœ… Password reset email sent successfully (in-memory)');
             console.log('=== FORGOT PASSWORD REQUEST END (SUCCESS) ===');
             return res.status(200).json({ error: '', success: true });
         }
     } catch (e) {
         error = e.toString();
-        console.error('💥 Forgot password error:', error);
+        console.error('ðŸ’¥ Forgot password error:', error);
         console.error('Error stack:', e.stack);
         console.log('=== FORGOT PASSWORD REQUEST END (ERROR) ===');
         return res.status(500).json({ error: error });
@@ -1315,7 +1330,4 @@ app.use((req, res, next) => {
 console.log('Server starting on port 5000...');
 console.log('Test credentials: email=test@test.com, password=test');
 
-const server = app.listen(5000);
-
-// Export for testing
-export { app, server };
+app.listen(5000); // start Node + Express server on port 5000
