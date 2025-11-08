@@ -4,14 +4,34 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const sgMail = require('@sendgrid/mail');
 const crypto = require('crypto');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-//New just added
-require('dotenv').config({ path: '/var/largeProjectServer/.env' });
+// ── .env loader ────────────────────────────────────────────────────────────────
+// Load .env from multiple possible locations
+// Try local .env first, then fallback to server path for production
+const localEnvPath = path.join(__dirname, '.env');
+const serverEnvPath = '/var/largeProjectServer/.env';
 
+// Try to load from local directory first (for development)
+require('dotenv').config({ path: localEnvPath });
+
+// If still no env vars, try server path (for production)
+if (!process.env.SENDGRID_API_KEY || !process.env.MONGODB_URL) {
+    require('dotenv').config({ path: serverEnvPath });
+}
+
+// Startup diagnostics
+console.log('CWD:', process.cwd());
+console.log('Local ENV path:', localEnvPath);
+console.log('Server ENV path:', serverEnvPath);
+console.log('SENDGRID key present?', !!process.env.SENDGRID_API_KEY);
+console.log('SENDGRID key suffix:', process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.slice(-8) : '(none)');
+console.log('EMAIL_FROM:', process.env.EMAIL_FROM);
+console.log('MONGODB_URL present?', !!process.env.MONGODB_URL);
 
 // Salt rounds for bcrypt (higher = more secure but slower)
 const SALT_ROUNDS = 10;
@@ -25,20 +45,6 @@ let users = [
 let cards = [];
 let nextUserId = 3; // For in-memory user ID generation
 let verificationCodes = new Map(); // Store verification codes temporarily
-
-// ── .env loader ────────────────────────────────────────────────────────────────
-// Load .env from an absolute path so the service finds it no matter where it runs
-const path = require('path');
-const ENV_PATH = '/var/largeProjectServer/.env';
-require('dotenv').config({ path: ENV_PATH });
-
-// Startup diagnostics
-console.log('CWD:', process.cwd());
-console.log('ENV loaded from:', ENV_PATH);
-console.log('SENDGRID key present?', !!process.env.SENDGRID_API_KEY);
-console.log('SENDGRID key suffix (server):', process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.slice(-8) : '(none)');
-console.log('EMAIL_FROM (server):', process.env.EMAIL_FROM);
-
 
 // SendGrid configuration
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
