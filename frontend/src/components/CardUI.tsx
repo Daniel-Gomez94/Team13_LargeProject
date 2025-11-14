@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function CardUI() {
 
-    const app_name = '159.65.36.255'
+    const app_name = 'codele.xyz'
     function buildPath(route: string): string {
         if (import.meta.env.MODE != 'development') {
             return 'https://' + app_name + ':5000/' + route;
