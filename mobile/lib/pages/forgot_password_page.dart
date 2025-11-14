@@ -1,62 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/login_page.dart';
+import 'package:mobile/pages/reset_password_verify.dart';
 import '../theme/app_theme.dart';
+import '../services/theme_service.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'verify_email_page.dart';
-import 'login_page.dart';
-import '../services/theme_service.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage>
+class _ForgotPasswordPageState extends State<ForgotPasswordPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
   String _errorMessage = '';
   bool _isLoading = false;
 
-  Future<void> _register() async {
-    // Validate inputs
-    if (_firstNameController.text.trim().isEmpty ||
-        _lastNameController.text.trim().isEmpty ||
-        _emailController.text.trim().isEmpty ||
-        _passwordController.text.trim().isEmpty ||
-        _confirmPasswordController.text.trim().isEmpty) {
-      setState(() {
-        _errorMessage = 'All fields are required';
-      });
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() {
-        _errorMessage = 'Passwords do not match';
-      });
-      return;
-    }
-
-    if (_passwordController.text.length < 6) {
-      setState(() {
-        _errorMessage = 'Password must be at least 6 characters';
-      });
-      return;
-    }
-
+  Future<void> _sendResetCode() async {
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -64,28 +32,20 @@ class _RegisterPageState extends State<RegisterPage>
 
     try {
       final response = await http.post(
-        Uri.parse("https://codele.xyz/api/register"),
+        Uri.parse("https://codele.xyz/api/forgot-password"),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'firstName': _firstNameController.text.trim(),
-          'lastName': _lastNameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text.trim(),
-        }),
+        body: jsonEncode({'email': _emailController.text}),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['error'] == null || data['error'].isEmpty) {
-          // Registration successful - navigate to verification page
-          print('Registration successful! Verification required.');
-
           if (mounted) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    VerifyEmailPage(email: _emailController.text.trim()),
+                    ResetPasswordVerifyPage(email: _emailController.text),
               ),
             );
           }
@@ -94,21 +54,20 @@ class _RegisterPageState extends State<RegisterPage>
             _errorMessage = data['error'];
           });
         }
-      } else if (response.statusCode == 400) {
+      } else if (response.statusCode == 403) {
         final data = jsonDecode(response.body);
         setState(() {
-          _errorMessage = data['error'] ?? 'Registration failed';
+          _errorMessage = data['error'];
         });
       } else {
         setState(() {
-          _errorMessage = 'Registration failed. Please try again.';
+          _errorMessage = 'Email failed to send. Please try again.';
         });
       }
     } catch (e) {
       setState(() {
         _errorMessage = 'Network error. Please check your connection.';
       });
-      print('Registration error: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -132,11 +91,7 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   void dispose() {
     _animationController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -148,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage>
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 32.0),
-            child: _buildRegisterCard(),
+            child: _buildLoginCard(),
           ),
         ),
       ),
@@ -169,7 +124,7 @@ class _RegisterPageState extends State<RegisterPage>
     );
   }
 
-  Widget _buildRegisterCard() {
+  Widget _buildLoginCard() {
     return IntrinsicHeight(
       child: Container(
         decoration: AppTheme.cardDecoration,
@@ -178,24 +133,25 @@ class _RegisterPageState extends State<RegisterPage>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAnimatedSwords(),
+            _buildAnimatedLock(),
             GradientText(
-              text: 'Join the Knights!',
+              text: 'Forgot Password?',
               style: AppTheme.headingStyle,
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 8),
+            Text(
+              "Enter your email and we'll send you a code to reset your password",
+              style: TextStyle(
+                color: AppTheme.accentColor.withOpacity(0.7),
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 40),
-            _buildFNameField(),
-            const SizedBox(height: 24),
-            _buildLNameField(),
-            const SizedBox(height: 24),
             _buildEmailField(),
             const SizedBox(height: 24),
-            _buildPasswordField(),
-            const SizedBox(height: 24),
-            _buildConfirmPasswordField(),
-            const SizedBox(height: 24),
-            _buildRegisterButton(),
+            _buildSendButton(),
             const SizedBox(height: 18),
             if (_errorMessage.isNotEmpty)
               Padding(
@@ -208,14 +164,14 @@ class _RegisterPageState extends State<RegisterPage>
               ),
             const Divider(color: AppTheme.primaryGold, thickness: 2),
             const SizedBox(height: 18),
-            _buildLoginSection(),
+            _buildRegisterSection(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAnimatedSwords() {
+  Widget _buildAnimatedLock() {
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -225,48 +181,10 @@ class _RegisterPageState extends State<RegisterPage>
         );
       },
       child: Text(
-        '⚔️',
+        '🔐',
         style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
-    );
-  }
-
-  Widget _buildFNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ValueListenableBuilder<bool>(
-          valueListenable: ThemeService.isDarkMode,
-          builder: (context, _, __) =>
-              Text('👤 FIRST NAME', style: AppTheme.labelStyle),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _firstNameController,
-          style: AppTheme.defaultStyle,
-          decoration: AppTheme.inputDecoration('Enter your first name'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ValueListenableBuilder<bool>(
-          valueListenable: ThemeService.isDarkMode,
-          builder: (context, _, __) =>
-              Text('👤 LAST NAME', style: AppTheme.labelStyle),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _lastNameController,
-          style: AppTheme.defaultStyle,
-          decoration: AppTheme.inputDecoration('Enter your last name'),
-        ),
-      ],
     );
   }
 
@@ -290,50 +208,10 @@ class _RegisterPageState extends State<RegisterPage>
     );
   }
 
-  Widget _buildPasswordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ValueListenableBuilder<bool>(
-          valueListenable: ThemeService.isDarkMode,
-          builder: (context, _, __) =>
-              Text('🔒 PASSWORD', style: AppTheme.labelStyle),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _passwordController,
-          style: AppTheme.defaultStyle,
-          obscureText: true,
-          decoration: AppTheme.inputDecoration('Create a strong password'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildConfirmPasswordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ValueListenableBuilder<bool>(
-          valueListenable: ThemeService.isDarkMode,
-          builder: (context, _, __) =>
-              Text('🔒 CONFIRM PASSWORD', style: AppTheme.labelStyle),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _confirmPasswordController,
-          style: AppTheme.defaultStyle,
-          obscureText: true,
-          decoration: AppTheme.inputDecoration('Re-enter your password'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRegisterButton() {
+  Widget _buildSendButton() {
     return GlowingContainer(
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _register,
+        onPressed: _isLoading ? null : _sendResetCode,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
             ? const SizedBox(
@@ -344,16 +222,16 @@ class _RegisterPageState extends State<RegisterPage>
                   valueColor: AlwaysStoppedAnimation<Color>(AppTheme.black),
                 ),
               )
-            : const Text('✨ REGISTER', style: AppTheme.buttonTextStyle),
+            : const Text('⚔️ SEND RESET CODE', style: AppTheme.buttonTextStyle),
       ),
     );
   }
 
-  Widget _buildLoginSection() {
+  Widget _buildRegisterSection() {
     return Column(
       children: [
         Text(
-          "Already have an account?",
+          "Remember your password?",
           style: TextStyle(
             color: AppTheme.accentColor.withOpacity(0.5),
             fontSize: 16,
@@ -362,13 +240,13 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const LoginPage()),
             );
           },
           style: AppTheme.secondaryButtonStyle,
-          child: const Text('🔑 Log In', style: AppTheme.buttonTextStyle),
+          child: Text('⚔️ Back to Login', style: AppTheme.buttonTextStyle),
         ),
       ],
     );
