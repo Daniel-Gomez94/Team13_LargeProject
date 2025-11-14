@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../services/theme_service.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'register_page.dart';
 import 'leaderboard_page.dart';
+import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,7 +34,7 @@ class _LoginPageState extends State<LoginPage>
 
     try {
       final response = await http.post(
-        Uri.parse("http://159.65.36.255/api/login"),
+        Uri.parse("https://codele.xyz/api/login"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _loginController.text,
@@ -45,14 +47,16 @@ class _LoginPageState extends State<LoginPage>
         if (data['error'] == null || data['error'].isEmpty) {
           // Login successful - navigate to leaderboard
           print('Login successful! User ID: ${data['id']}');
-          
+
           // Navigate to leaderboard page
           if (mounted) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => LeaderboardPage(
-                  userId: data['id'] is String ? int.parse(data['id']) : data['id'],
+                  userId: data['id'] is String
+                      ? int.parse(data['id'])
+                      : data['id'],
                   userName: '${data['firstName']} ${data['lastName']}'.trim(),
                 ),
               ),
@@ -129,7 +133,7 @@ class _LoginPageState extends State<LoginPage>
           decoration: BoxDecoration(
             boxShadow: AppTheme.goldGlowShadow(opacity: 0.3),
           ),
-          child: const GradientText(text: 'CODELE', style: AppTheme.titleStyle),
+          child: GradientText(text: 'CODELE', style: AppTheme.titleStyle),
         ),
       ),
     );
@@ -145,7 +149,7 @@ class _LoginPageState extends State<LoginPage>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildAnimatedCastle(),
-            const GradientText(
+            GradientText(
               text: 'Welcome Back, Knight!',
               style: AppTheme.headingStyle,
               textAlign: TextAlign.center,
@@ -154,6 +158,8 @@ class _LoginPageState extends State<LoginPage>
             _buildEmailField(),
             const SizedBox(height: 24),
             _buildPasswordField(),
+            const SizedBox(height: 8),
+            _buildForgotPasswordButton(),
             const SizedBox(height: 24),
             _buildLoginButton(),
             const SizedBox(height: 18),
@@ -184,7 +190,7 @@ class _LoginPageState extends State<LoginPage>
           child: child,
         );
       },
-      child: const Text(
+      child: Text(
         '🏰',
         style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
@@ -196,7 +202,11 @@ class _LoginPageState extends State<LoginPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('📧 EMAIL ADDRESS', style: AppTheme.labelStyle),
+        ValueListenableBuilder<bool>(
+          valueListenable: ThemeService.isDarkMode,
+          builder: (context, _, __) =>
+              Text('📧 EMAIL ADDRESS', style: AppTheme.labelStyle),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: _loginController,
@@ -212,7 +222,11 @@ class _LoginPageState extends State<LoginPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('🔒 PASSWORD', style: AppTheme.labelStyle),
+        ValueListenableBuilder<bool>(
+          valueListenable: ThemeService.isDarkMode,
+          builder: (context, _, __) =>
+              Text('🔒 PASSWORD', style: AppTheme.labelStyle),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: _passwordController,
@@ -221,6 +235,28 @@ class _LoginPageState extends State<LoginPage>
           decoration: AppTheme.inputDecoration('Enter your password'),
         ),
       ],
+    );
+  }
+
+  Widget _buildForgotPasswordButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+          );
+        },
+        child: Text(
+          'Forgot Password?',
+          style: TextStyle(
+            color: AppTheme.accentColor,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 
@@ -249,20 +285,26 @@ class _LoginPageState extends State<LoginPage>
         Text(
           "Don't have an account?",
           style: TextStyle(
-            color: AppTheme.primaryGold.withOpacity(0.5),
+            color: AppTheme.accentColor.withOpacity(0.5),
             fontSize: 16,
           ),
           textAlign: TextAlign.center,
         ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const RegisterPage()),
-            );
-          },
-          style: AppTheme.secondaryButtonStyle,
-          child: const Text('✨ Register Now', style: AppTheme.buttonTextStyle),
+        ValueListenableBuilder<bool>(
+          valueListenable: ThemeService.isDarkMode,
+          builder: (context, _, __) => ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            },
+            style: AppTheme.secondaryButtonStyle,
+            child: const Text(
+              '✨ Register Now',
+              style: AppTheme.buttonTextStyle,
+            ),
+          ),
         ),
       ],
     );

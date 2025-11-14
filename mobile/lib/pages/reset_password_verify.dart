@@ -1,91 +1,126 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile/pages/login_page.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login_page.dart';
 import '../services/theme_service.dart';
 
-class VerifyEmailPage extends StatefulWidget {
+class ResetPasswordVerifyPage extends StatefulWidget {
   final String email;
-
-  const VerifyEmailPage({super.key, required this.email});
+  const ResetPasswordVerifyPage({required this.email, super.key});
 
   @override
-  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
+  State<ResetPasswordVerifyPage> createState() =>
+      _ResetPasswordVerifyPageState();
 }
 
-class _VerifyEmailPageState extends State<VerifyEmailPage>
+class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
   final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   String _errorMessage = '';
   String _successMessage = '';
   bool _isLoading = false;
   bool _isResending = false;
 
-  Future<void> _verifyEmail() async {
+  Future<void> _reset() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
     if (_codeController.text.trim().isEmpty) {
       setState(() {
-        _errorMessage = 'Please enter the verification code';
+        _errorMessage = 'Please enter the reset code';
+        _isLoading = false;
       });
       return;
     }
 
     if (_codeController.text.trim().length != 6) {
       setState(() {
-        _errorMessage = 'Verification code must be 6 digits';
+        _errorMessage = 'Reset code must be 6 digits';
+        _isLoading = false;
       });
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-      _successMessage = '';
-    });
+    if (_newPasswordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter and confirm your new password';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _errorMessage = 'Passwords do not match';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    if (_newPasswordController.text.length < 6) {
+      setState(() {
+        _errorMessage = 'New Password must be at least 6 characters';
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
       final response = await http.post(
-        Uri.parse("https://codele.xyz/api/verify-email"),
+        Uri.parse("https://codele.xyz/api/reset-password"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': widget.email,
-          'code': _codeController.text.trim(),
+          'code': _codeController.text,
+          'newPassword': _newPasswordController.text,
         }),
       );
 
-      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['error'] == null || data['error'].isEmpty) {
+          // Login successful - navigate to leaderboard
+          print('Password reset successfully! Redirecting to login...');
 
-      if (response.statusCode == 200 && data['success'] == true) {
-        // Verification successful
-        setState(() {
-          _successMessage = 'Email verified successfully!';
-        });
-
-        // Wait a moment to show success message
-        await Future.delayed(const Duration(seconds: 2));
-
-        if (mounted) {
-          // Navigate to login page
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
-          );
+          // Navigate to leaderboard page
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = data['error'];
+          });
         }
+      } else if (response.statusCode == 403) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _errorMessage = data['error'];
+        });
       } else {
         setState(() {
-          _errorMessage = data['error'] ?? 'Verification failed';
+          _errorMessage = 'Login failed. Please try again.';
         });
       }
     } catch (e) {
       setState(() {
         _errorMessage = 'Network error. Please check your connection.';
       });
-      print('Verification error: $e');
+      print('Login error: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -97,12 +132,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     setState(() {
       _isResending = true;
       _errorMessage = '';
-      _successMessage = '';
     });
 
     try {
       final response = await http.post(
-        Uri.parse("https://codele.xyz/api/resend-verification"),
+        Uri.parse("https://codele.xyz/api/forgot-password"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': widget.email}),
       );
@@ -111,7 +145,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
 
       if (response.statusCode == 200 && data['success'] == true) {
         setState(() {
-          _successMessage = 'Verification code resent! Check your email.';
+          _successMessage = 'Reset code resent! Check your email.';
         });
       } else {
         setState(() {
@@ -147,6 +181,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
   void dispose() {
     _animationController.dispose();
     _codeController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -158,7 +194,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 32.0),
-            child: _buildVerifyCard(),
+            child: _buildLoginCard(),
           ),
         ),
       ),
@@ -179,7 +215,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     );
   }
 
-  Widget _buildVerifyCard() {
+  Widget _buildLoginCard() {
     return IntrinsicHeight(
       child: Container(
         decoration: AppTheme.cardDecoration,
@@ -188,35 +224,29 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAnimatedEnvelope(),
+            _buildAnimatedLock(),
             GradientText(
-              text: 'Verify Your Email',
+              text: 'Reset Your Password',
               style: AppTheme.headingStyle,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             Text(
-              'We sent a 6-digit verification code to:',
+              "Enter the code sent to email and your new password",
               style: TextStyle(
                 color: AppTheme.accentColor.withOpacity(0.7),
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            Text(
-              widget.email,
-              style: TextStyle(
-                color: AppTheme.accentColor,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 40),
             _buildCodeField(),
             const SizedBox(height: 24),
-            _buildVerifyButton(),
+            _buildNewPasswordField(),
+            const SizedBox(height: 24),
+            _buildConfirmPasswordField(),
+            const SizedBox(height: 24),
+            _buildResetButton(),
             const SizedBox(height: 18),
             if (_errorMessage.isNotEmpty)
               Padding(
@@ -245,7 +275,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     );
   }
 
-  Widget _buildAnimatedEnvelope() {
+  Widget _buildAnimatedLock() {
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -255,8 +285,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
         );
       },
       child: Text(
-        '📧',
-        style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+        '🔐',
+        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
     );
@@ -269,7 +299,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
         ValueListenableBuilder<bool>(
           valueListenable: ThemeService.isDarkMode,
           builder: (context, _, __) =>
-              Text('🔢 VERIFICATION CODE', style: AppTheme.labelStyle),
+              Text('🔢 RESET CODE', style: AppTheme.labelStyle),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -284,10 +314,50 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     );
   }
 
-  Widget _buildVerifyButton() {
+  Widget _buildNewPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ValueListenableBuilder<bool>(
+          valueListenable: ThemeService.isDarkMode,
+          builder: (context, _, __) =>
+              Text('🔒 NEW PASSWORD', style: AppTheme.labelStyle),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _newPasswordController,
+          style: AppTheme.defaultStyle,
+          obscureText: true,
+          decoration: AppTheme.inputDecoration('Enter new password'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ValueListenableBuilder<bool>(
+          valueListenable: ThemeService.isDarkMode,
+          builder: (context, _, __) =>
+              Text('🔒 CONFIRM PASSWORD', style: AppTheme.labelStyle),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _confirmPasswordController,
+          style: AppTheme.defaultStyle,
+          obscureText: true,
+          decoration: AppTheme.inputDecoration('Re-enter new password'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResetButton() {
     return GlowingContainer(
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _verifyEmail,
+        onPressed: _isLoading ? null : _reset,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
             ? const SizedBox(
@@ -298,7 +368,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
                   valueColor: AlwaysStoppedAnimation<Color>(AppTheme.black),
                 ),
               )
-            : const Text('✅ VERIFY EMAIL', style: AppTheme.buttonTextStyle),
+            : const Text('✅ RESET PASSWORD', style: AppTheme.buttonTextStyle),
       ),
     );
   }

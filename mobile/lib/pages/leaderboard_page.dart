@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
+import '../services/theme_service.dart';
+import 'login_page.dart';
 
 class LeaderboardPage extends StatefulWidget {
   final int userId;
@@ -37,13 +39,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     });
 
     try {
-      final endpoint = _selectedTab == 'score' 
-          ? '/api/leaderboard/score' 
+      final endpoint = _selectedTab == 'score'
+          ? '/api/leaderboard/score'
           : '/api/leaderboard/streak';
-      
-      final response = await http.get(
-        Uri.parse('http://159.65.36.255$endpoint'),
-      );
+
+      final response = await http.get(Uri.parse('https://codele.xyz$endpoint'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -79,6 +79,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
+      endDrawer: _buildDrawer(context),
       body: RefreshIndicator(
         onRefresh: _loadLeaderboard,
         child: SingleChildScrollView(
@@ -89,7 +90,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildUserGreeting(),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildTabSelector(),
                 const SizedBox(height: 24),
                 _buildLeaderboardCard(),
@@ -103,19 +104,107 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: AppTheme.goldGlowShadow(opacity: 0.3),
-          ),
-          child: const GradientText(
-            text: 'CODELE LEADERBOARD',
-            style: AppTheme.titleStyle,
+      title: Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: AppTheme.goldGlowShadow(opacity: 0.3),
+            ),
+            child: GradientText(
+              text: 'CODELE LEADERBOARD',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),
-      automaticallyImplyLeading: false,
+      actions: [
+        Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, size: 28, color: AppTheme.primaryGold),
+            onPressed: () => Scaffold.of(context).openEndDrawer(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: AppTheme.darkerBackground,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              decoration: BoxDecoration(color: AppTheme.darkerBackground),
+              height: 72,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: const GradientText(
+                text: 'Menu',
+                style: AppTheme.headingStyle,
+              ),
+            ),
+            const Divider(color: AppTheme.primaryGold, thickness: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Column(
+                children: [
+                  ValueListenableBuilder<bool>(
+                    valueListenable: ThemeService.isDarkMode,
+                    builder: (context, isDark, _) {
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                        ),
+                        leading: Icon(
+                          Icons.brightness_6,
+                          color: AppTheme.accentColor,
+                        ),
+                        title: Text(
+                          'Dark Mode',
+                          style: TextStyle(color: AppTheme.accentColor),
+                        ),
+                        trailing: Switch(
+                          value: isDark,
+                          onChanged: (v) => ThemeService.toggle(),
+                          activeColor: AppTheme.primaryGold,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    visualDensity: VisualDensity.compact,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    leading: Icon(Icons.logout, color: AppTheme.accentColor),
+                    title: Text(
+                      'Logout',
+                      style: TextStyle(color: AppTheme.accentColor),
+                    ),
+                    onTap: () {
+                      // Navigate back to login and remove all routes
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -133,8 +222,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               children: [
                 Text(
                   'Welcome, ${widget.userName}!',
-                  style: const TextStyle(
-                    color: AppTheme.primaryGold,
+                  style: TextStyle(
+                    color: AppTheme.accentColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -159,10 +248,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 color: _selectedTab == 'score'
                     ? AppTheme.primaryGold
                     : AppTheme.darkBackground,
-                border: Border.all(
-                  color: AppTheme.primaryGold,
-                  width: 2,
-                ),
+                border: Border.all(color: AppTheme.primaryGold, width: 2),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(8),
                   bottomLeft: Radius.circular(8),
@@ -174,7 +260,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 style: TextStyle(
                   color: _selectedTab == 'score'
                       ? AppTheme.black
-                      : AppTheme.primaryGold,
+                      : AppTheme.accentColor,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -191,10 +277,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 color: _selectedTab == 'streak'
                     ? AppTheme.primaryGold
                     : AppTheme.darkBackground,
-                border: Border.all(
-                  color: AppTheme.primaryGold,
-                  width: 2,
-                ),
+                border: Border.all(color: AppTheme.primaryGold, width: 2),
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(8),
                   bottomRight: Radius.circular(8),
@@ -206,7 +289,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 style: TextStyle(
                   color: _selectedTab == 'streak'
                       ? AppTheme.black
-                      : AppTheme.primaryGold,
+                      : AppTheme.accentColor,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -225,18 +308,16 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       child: Column(
         children: [
           GradientText(
-            text: _selectedTab == 'score' 
-                ? '🏆 Top Players by Score' 
+            text: _selectedTab == 'score'
+                ? '🏆 Top Players by Score'
                 : '🔥 Top Players by Streak',
             style: AppTheme.headingStyle.copyWith(fontSize: 24),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(
-                color: AppTheme.primaryGold,
-              ),
+            Center(
+              child: CircularProgressIndicator(color: AppTheme.accentColor),
             )
           else if (_errorMessage.isNotEmpty)
             Center(
@@ -244,32 +325,23 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 children: [
                   Text(
                     _errorMessage,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadLeaderboard,
                     style: AppTheme.primaryButtonStyle,
-                    child: const Text(
-                      'Retry',
-                      style: AppTheme.buttonTextStyle,
-                    ),
+                    child: const Text('Retry', style: AppTheme.buttonTextStyle),
                   ),
                 ],
               ),
             )
           else if (_leaderboardData.isEmpty)
-            const Center(
+            Center(
               child: Text(
                 'No leaderboard data available yet.\nBe the first to complete a challenge!',
-                style: TextStyle(
-                  color: AppTheme.primaryGold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: AppTheme.accentColor, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
             )
@@ -324,10 +396,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             width: 40,
             child: Text(
               rankEmoji,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ),
@@ -339,17 +408,18 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 Text(
                   '${item['firstName']} ${item['lastName']}${isCurrentUser ? ' (You)' : ''}',
                   style: TextStyle(
-                    color: AppTheme.primaryGold,
+                    color: AppTheme.accentColor,
                     fontSize: 16,
-                    fontWeight:
-                        isCurrentUser ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isCurrentUser
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
                 if (_selectedTab == 'score')
                   Text(
                     '${item['totalCompletions']} challenges completed',
                     style: TextStyle(
-                      color: AppTheme.primaryGold.withOpacity(0.7),
+                      color: AppTheme.accentColor.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   ),
