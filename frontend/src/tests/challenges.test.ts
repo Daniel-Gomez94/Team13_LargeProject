@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { challenges, hiddenMains, Challenge } from '../data/challenges';
+import { challenges, hiddenMains } from '../data/challenges';
 
 describe('Challenges Data', () => {
   describe('challenges array', () => {
