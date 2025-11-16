@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'verify_email_page.dart';
 import 'login_page.dart';
 import '../services/theme_service.dart';
+import '../services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  RegisterPage({super.key, ApiClient? apiClient})
+      : apiClient = apiClient ?? ApiService();
+
+  final ApiClient apiClient;
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -63,16 +66,12 @@ class _RegisterPageState extends State<RegisterPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/register"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'firstName': _firstNameController.text.trim(),
-          'lastName': _lastNameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text.trim(),
-        }),
-      );
+      final response = await widget.apiClient.post('/api/register', {
+        'firstName': _firstNameController.text.trim(),
+        'lastName': _lastNameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+      });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -84,8 +83,10 @@ class _RegisterPageState extends State<RegisterPage>
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    VerifyEmailPage(email: _emailController.text.trim()),
+                builder: (context) => VerifyEmailPage(
+                  email: _emailController.text.trim(),
+                  apiClient: widget.apiClient,
+                ),
               ),
             );
           }
@@ -243,6 +244,7 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('register_first_name_field'),
           controller: _firstNameController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter your first name'),
@@ -262,6 +264,7 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('register_last_name_field'),
           controller: _lastNameController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter your last name'),
@@ -281,6 +284,7 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('register_email_field'),
           controller: _emailController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('knight@ucf.edu'),
@@ -301,6 +305,7 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('register_password_field'),
           controller: _passwordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
@@ -321,6 +326,7 @@ class _RegisterPageState extends State<RegisterPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('register_confirm_password_field'),
           controller: _confirmPasswordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
@@ -333,6 +339,7 @@ class _RegisterPageState extends State<RegisterPage>
   Widget _buildRegisterButton() {
     return GlowingContainer(
       child: ElevatedButton(
+        key: const Key('register_submit_button'),
         onPressed: _isLoading ? null : _register,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
@@ -361,10 +368,15 @@ class _RegisterPageState extends State<RegisterPage>
           textAlign: TextAlign.center,
         ),
         ElevatedButton(
+          key: const Key('register_go_to_login_button'),
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
+              MaterialPageRoute(
+                builder: (context) => LoginPage(
+                  apiClient: widget.apiClient,
+                ),
+              ),
             );
           },
           style: AppTheme.secondaryButtonStyle,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+const { describe, it, expect } = require('@jest/globals');
 
 describe('Challenge Solution Tests', () => {
   describe('Challenge 1: Merge Bank Accounts', () => {

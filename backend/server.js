@@ -1336,4 +1336,6 @@ app.use((req, res, next) => {
 console.log('Server starting on port 5000...');
 console.log('Test credentials: email=test@test.com, password=test');
 
-app.listen(5000); // start Node + Express server on port 5000
+const server = app.listen(5000); // start Node + Express server on port 5000
+
+module.exports = { app, server };

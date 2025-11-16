@@ -3,14 +3,17 @@ import '../theme/app_theme.dart';
 import '../services/theme_service.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'register_page.dart';
 import 'leaderboard_page.dart';
 import 'forgot_password_page.dart';
+import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key, ApiClient? apiClient})
+      : apiClient = apiClient ?? ApiService();
+
+  final ApiClient apiClient;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -33,14 +36,10 @@ class _LoginPageState extends State<LoginPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/login"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': _loginController.text,
-          'password': _passwordController.text,
-        }),
-      );
+      final response = await widget.apiClient.post('/api/login', {
+        'email': _loginController.text,
+        'password': _passwordController.text,
+      });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -58,6 +57,7 @@ class _LoginPageState extends State<LoginPage>
                       ? int.parse(data['id'])
                       : data['id'],
                   userName: '${data['firstName']} ${data['lastName']}'.trim(),
+                  apiClient: widget.apiClient,
                 ),
               ),
             );
@@ -209,6 +209,7 @@ class _LoginPageState extends State<LoginPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('login_email_field'),
           controller: _loginController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('knight@ucf.edu'),
@@ -229,6 +230,7 @@ class _LoginPageState extends State<LoginPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('login_password_field'),
           controller: _passwordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
@@ -242,10 +244,15 @@ class _LoginPageState extends State<LoginPage>
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
+        key: const Key('login_forgot_password_button'),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+            MaterialPageRoute(
+              builder: (context) => ForgotPasswordPage(
+                apiClient: widget.apiClient,
+              ),
+            ),
           );
         },
         child: Text(
@@ -263,6 +270,7 @@ class _LoginPageState extends State<LoginPage>
   Widget _buildLoginButton() {
     return GlowingContainer(
       child: ElevatedButton(
+        key: const Key('login_submit_button'),
         onPressed: _isLoading ? null : _login,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
@@ -296,7 +304,11 @@ class _LoginPageState extends State<LoginPage>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const RegisterPage()),
+                MaterialPageRoute(
+                  builder: (context) => RegisterPage(
+                    apiClient: widget.apiClient,
+                  ),
+                ),
               );
             },
             style: AppTheme.secondaryButtonStyle,

@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'pages/login_page.dart';
 import 'services/theme_service.dart';
+import 'services/api_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final ApiClient _apiClient = ApiService();
 
   // This widget is the root of your application.
   @override
@@ -21,7 +24,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-          home: const LoginPage(),
+          home: LoginPage(apiClient: _apiClient),
         );
       },
     );

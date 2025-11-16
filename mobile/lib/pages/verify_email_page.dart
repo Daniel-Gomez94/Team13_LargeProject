@@ -2,15 +2,17 @@
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login_page.dart';
 import '../services/theme_service.dart';
+import '../services/api_service.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
+  VerifyEmailPage({super.key, required this.email, ApiClient? apiClient})
+      : apiClient = apiClient ?? ApiService();
 
-  const VerifyEmailPage({super.key, required this.email});
+  final ApiClient apiClient;
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
@@ -49,14 +51,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/verify-email"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': widget.email,
-          'code': _codeController.text.trim(),
-        }),
-      );
+      final response = await widget.apiClient.post('/api/verify-email', {
+        'email': widget.email,
+        'code': _codeController.text.trim(),
+      });
 
       final data = jsonDecode(response.body);
 
@@ -73,7 +71,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
           // Navigate to login page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
+            MaterialPageRoute(
+              builder: (context) => LoginPage(
+                apiClient: widget.apiClient,
+              ),
+            ),
           );
         }
       } else {
@@ -101,10 +103,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/resend-verification"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': widget.email}),
+      final response = await widget.apiClient.post(
+        '/api/resend-verification',
+        {'email': widget.email},
       );
 
       final data = jsonDecode(response.body);
@@ -273,6 +274,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('verify_code_field'),
           controller: _codeController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter 6-digit code'),
@@ -287,6 +289,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
   Widget _buildVerifyButton() {
     return GlowingContainer(
       child: ElevatedButton(
+        key: const Key('verify_submit_button'),
         onPressed: _isLoading ? null : _verifyEmail,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
@@ -315,6 +318,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
           textAlign: TextAlign.center,
         ),
         ElevatedButton(
+          key: const Key('verify_resend_button'),
           onPressed: _isResending ? null : _resendCode,
           style: AppTheme.secondaryButtonStyle,
           child: _isResending

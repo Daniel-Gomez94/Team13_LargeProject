@@ -5,11 +5,14 @@ import '../theme/app_theme.dart';
 import '../services/theme_service.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../services/api_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
+  ForgotPasswordPage({super.key, ApiClient? apiClient})
+      : apiClient = apiClient ?? ApiService();
+
+  final ApiClient apiClient;
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -31,10 +34,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/forgot-password"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': _emailController.text}),
+      final response = await widget.apiClient.post(
+        '/api/forgot-password',
+        {'email': _emailController.text},
       );
 
       if (response.statusCode == 200) {
@@ -44,8 +46,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    ResetPasswordVerifyPage(email: _emailController.text),
+                builder: (context) => ResetPasswordVerifyPage(
+                  email: _emailController.text,
+                  apiClient: widget.apiClient,
+                ),
               ),
             );
           }
@@ -199,6 +203,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('forgot_email_field'),
           controller: _emailController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('knight@ucf.edu'),
@@ -211,6 +216,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   Widget _buildSendButton() {
     return GlowingContainer(
       child: ElevatedButton(
+        key: const Key('forgot_send_code_button'),
         onPressed: _isLoading ? null : _sendResetCode,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
@@ -242,7 +248,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
+              MaterialPageRoute(
+                builder: (context) => LoginPage(
+                  apiClient: widget.apiClient,
+                ),
+              ),
             );
           },
           style: AppTheme.secondaryButtonStyle,

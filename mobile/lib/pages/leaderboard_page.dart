@@ -1,20 +1,23 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../services/theme_service.dart';
 import 'login_page.dart';
+import '../services/api_service.dart';
 
 class LeaderboardPage extends StatefulWidget {
   final int userId;
   final String userName;
 
-  const LeaderboardPage({
+  LeaderboardPage({
     super.key,
     required this.userId,
     required this.userName,
-  });
+    ApiClient? apiClient,
+  }) : apiClient = apiClient ?? ApiService();
+
+  final ApiClient apiClient;
 
   @override
   State<LeaderboardPage> createState() => _LeaderboardPageState();
@@ -43,7 +46,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           ? '/api/leaderboard/score'
           : '/api/leaderboard/streak';
 
-      final response = await http.get(Uri.parse('https://codele.xyz$endpoint'));
+      final response = await widget.apiClient.get(endpoint);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -189,11 +192,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       style: TextStyle(color: AppTheme.accentColor),
                     ),
                     onTap: () {
-                      // Navigate back to login and remove all routes
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
+                          builder: (context) => LoginPage(
+                            apiClient: widget.apiClient,
+                          ),
                         ),
                         (route) => false,
                       );

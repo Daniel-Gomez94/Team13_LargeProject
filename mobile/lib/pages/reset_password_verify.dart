@@ -3,13 +3,17 @@ import 'package:mobile/pages/login_page.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gradient.dart';
 import '../widgets/glow.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../services/theme_service.dart';
+import '../services/api_service.dart';
 
 class ResetPasswordVerifyPage extends StatefulWidget {
   final String email;
-  const ResetPasswordVerifyPage({required this.email, super.key});
+  ResetPasswordVerifyPage(
+      {required this.email, super.key, ApiClient? apiClient})
+      : apiClient = apiClient ?? ApiService();
+
+  final ApiClient apiClient;
 
   @override
   State<ResetPasswordVerifyPage> createState() =>
@@ -78,15 +82,11 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
     }
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/reset-password"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': widget.email,
-          'code': _codeController.text,
-          'newPassword': _newPasswordController.text,
-        }),
-      );
+      final response = await widget.apiClient.post('/api/reset-password', {
+        'email': widget.email,
+        'code': _codeController.text,
+        'newPassword': _newPasswordController.text,
+      });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -98,7 +98,11 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
+              MaterialPageRoute(
+                builder: (context) => LoginPage(
+                  apiClient: widget.apiClient,
+                ),
+              ),
             );
           }
         } else {
@@ -135,10 +139,9 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
     });
 
     try {
-      final response = await http.post(
-        Uri.parse("https://codele.xyz/api/forgot-password"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': widget.email}),
+      final response = await widget.apiClient.post(
+        '/api/forgot-password',
+        {'email': widget.email},
       );
 
       final data = jsonDecode(response.body);
@@ -303,6 +306,7 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('reset_code_field'),
           controller: _codeController,
           style: AppTheme.defaultStyle,
           decoration: AppTheme.inputDecoration('Enter 6-digit code'),
@@ -325,6 +329,7 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('reset_new_password_field'),
           controller: _newPasswordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
@@ -345,6 +350,7 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('reset_confirm_password_field'),
           controller: _confirmPasswordController,
           style: AppTheme.defaultStyle,
           obscureText: true,
@@ -357,6 +363,7 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
   Widget _buildResetButton() {
     return GlowingContainer(
       child: ElevatedButton(
+        key: const Key('reset_submit_button'),
         onPressed: _isLoading ? null : _reset,
         style: AppTheme.primaryButtonStyle,
         child: _isLoading
@@ -385,6 +392,7 @@ class _ResetPasswordVerifyPageState extends State<ResetPasswordVerifyPage>
           textAlign: TextAlign.center,
         ),
         ElevatedButton(
+          key: const Key('reset_resend_button'),
           onPressed: _isResending ? null : _resendCode,
           style: AppTheme.secondaryButtonStyle,
           child: _isResending

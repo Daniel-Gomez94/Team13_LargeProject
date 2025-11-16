@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
-import request from 'supertest';
-import { MongoClient } from 'mongodb';
+const { describe, it, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
+const request = require('supertest');
+const { MongoClient } = require('mongodb');
 
 // Mock environment variables
 process.env.MONGODB_URI = 'mongodb://localhost:27017/ucf_coding_test';
@@ -16,7 +16,7 @@ describe('Backend Server Tests', () => {
 
   beforeAll(async () => {
     // Import server after env vars are set
-    const serverModule = await import('../server.js');
+    const serverModule = require('../server.js');
     app = serverModule.app;
     server = serverModule.server;
 
