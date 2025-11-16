@@ -1,145 +1,93 @@
-﻿import { useState } from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-function Login() {
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-    const app_name = 'codele.xyz'
-    function buildPath(route: string): string {
-        if (import.meta.env.MODE != 'development') {
-            return 'https://' + app_name + '/' + route;
-        }
-        else {
-            return 'http://localhost:5000/' + route;
-        }
+const Login: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
     }
 
-    const [message, setMessage] = useState('');
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPassword, setPassword] = useState('');
+    setLoading(true);
+    setError('');
 
-    async function doLogin(event: any): Promise<void> {
-        event.preventDefault();
-
-        // Trim inputs
-        const trimmedEmail = loginEmail.trim();
-        const trimmedPassword = loginPassword.trim();
-
-        if (!trimmedEmail || !trimmedPassword) {
-            setMessage('Please enter both email and password');
-            return;
-        }
-
-        var obj = { email: trimmedEmail, password: trimmedPassword };
-        var js = JSON.stringify(obj);
-
-        try {
-            const response = await fetch(buildPath('api/login'),
-                { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
-
-            var res = JSON.parse(await response.text());
-            
-            console.log('Login response received:', res);
-            console.log('Response id:', res.id, 'Type:', typeof res.id);
-
-            // Check if login was successful (id exists and is not -1)
-            if (!res.id || res.id === -1 || (typeof res.id === 'number' && res.id <= 0)) {
-                setMessage('Email/Password combination incorrect');
-            }
-            else {
-                var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }
-                localStorage.setItem('user_data', JSON.stringify(user));
-
-                setMessage('Login successful! Redirecting...');
-                console.log('Login successful, redirecting to /game');
-                setTimeout(() => {
-                    window.location.href = '/game';
-                }, 500);
-            }
-        }
-        catch (error: any) {
-            setMessage('Login failed: ' + error.toString());
-            console.error('Login error:', error);
-            return;
-        }
-    };
-
-    function handleSetLoginEmail(e: any): void {
-        setLoginEmail(e.target.value);
+    try {
+      await login(email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    function handleSetPassword(e: any): void {
-        setPassword(e.target.value);
-    }
-
-    return (
-        <div id="loginDiv" className="auth-container">
-            <div className="auth-header">
-                <div className="auth-icon">🏰</div>
-                <h2 className="auth-title">Welcome Back, Knight!</h2>
-            </div>
-
-            <form onSubmit={doLogin} className="auth-form">
-                <div className="form-group">
-                    <label htmlFor="loginEmail">
-                        <span className="label-icon">📧</span>
-                        Email Address
-                    </label>
-                    <input 
-                        type="email" 
-                        id="loginEmail" 
-                        placeholder="knight@ucf.edu"
-                        value={loginEmail}
-                        onChange={handleSetLoginEmail}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="loginPassword">
-                        <span className="label-icon">🔒</span>
-                        Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="loginPassword" 
-                        placeholder="Enter your password"
-                        value={loginPassword}
-                        onChange={handleSetPassword}
-                        required
-                    />
-                </div>
-
-                <div style={{ textAlign: 'right', marginTop: '-10px', marginBottom: '15px' }}>
-                    <a href="/forgot-password" className="auth-link" style={{ fontSize: '0.9em' }}>
-                        Forgot Password?
-                    </a>
-                </div>
-
-                <button 
-                    type="submit" 
-                    id="loginButton" 
-                    className="auth-submit-button"
-                >
-                    <span className="button-icon">⚔️</span>
-                    Login
-                </button>
-
-                {message && (
-                    <div className={`auth-message ${message.includes('successful') ? 'success' : 'error'}`}>
-                        {message}
-                    </div>
-                )}
-            </form>
-
-            <div className="auth-footer">
-                <p>Don't have an account?</p>
-                <a href="/register" className="auth-link">
-                    <span className="link-icon">✨</span>
-                    Register Now
-                </a>
-            </div>
+  return (
+    <div className="auth-form">
+      <h2>Login to Your Account</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-    );
+        
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type='button'
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+                <VisibilityOffIcon />
+            ): (
+                <VisibilityIcon />
+            )}
+          </button>
+        </div>
+
+        <p style={{ marginTop: '20px' }}>
+          <Link to="/request-pass-reset" className='link'>Forgot Password?</Link>
+        </p>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <button type="submit" disabled={loading} style={{display: 'flex', alignItems: 'center', margin: '0 auto'}}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
+      
+      <p style={{ textAlign: 'center', marginTop: '20px' }}>
+        Don't have an account? <Link to="/register" className='link'>Register here</Link>
+      </p>
+    </div>
+  );
 };
 
 export default Login;
-

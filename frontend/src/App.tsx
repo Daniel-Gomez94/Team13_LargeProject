@@ -1,24 +1,43 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import Header from './components/Header';
+import Login from './components/Login';
+import Register from './components/Register';
+import CodingPractice from './components/CodingPractice';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import GamePage from './pages/CardPage';
-import LeaderboardPage from './pages/LeaderboardPage';
+import VerifyEmail from './components/VerifyEmail';
+import RequestPassReset from './components/RequestPassReset';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
-    return (
-        <BrowserRouter>
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Header />
+          <main>
             <Routes>
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/game" element={<GamePage />} />
-                <Route path="/cards" element={<GamePage />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/request-pass-reset" element={<RequestPassReset />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <CodingPractice />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
-        </BrowserRouter>
-    );
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;

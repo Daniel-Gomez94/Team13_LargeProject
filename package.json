@@ -1,29 +1,32 @@
 {
-  "name": "ucf-coding-practice",
+  "name": "ucf-coding-practice-mern",
   "version": "1.0.0",
-  "description": "UCF Coding Practice Platform",
+  "description": "UCF Computer Science Foundations Practice - MERN Stack",
+  "main": "server.js",
   "scripts": {
-    "install-all": "cd frontend && npm install && cd ../backend && npm install",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "cd frontend && npm run dev",
-    "server": "cd backend && npm start",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "install-client": "cd frontend && npm install",
+    "install-server": "cd backend && npm install",
+    "install-all": "npm install && npm run install-server && npm run install-client",
     "build": "cd frontend && npm run build",
-    "test": "npm run test:frontend && npm run test:backend",
-    "test:frontend": "cd frontend && npm test -- --run",
-    "test:backend": "cd backend && npm test",
-    "test:coverage": "npm run test:coverage:frontend && npm run test:coverage:backend",
-    "test:coverage:frontend": "cd frontend && npm run test:coverage",
-    "test:coverage:backend": "cd backend && npm run test:coverage"
+    "start": "cd backend && npm start",
+    "deploy": "npm run install-all && npm run build && npm run start",
+    "heroku-postbuild": "npm run install-all && npm run build"
   },
   "keywords": [
-    "education",
-    "coding",
-    "practice",
-    "ucf"
+    "MERN",
+    "React",
+    "Node.js",
+    "Express",
+    "MongoDB",
+    "UCF",
+    "Coding Practice"
   ],
   "author": "Team 13",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^8.2.2"
   }
 }
