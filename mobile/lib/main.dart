@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       valueListenable: ThemeService.isDarkMode,
       builder: (context, isDark, _) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Codele',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

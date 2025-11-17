@@ -30,6 +30,16 @@ class _LoginPageState extends State<LoginPage>
   bool _isLoading = false;
 
   Future<void> _login() async {
+    final email = _loginController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter both email and password';
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -37,25 +47,32 @@ class _LoginPageState extends State<LoginPage>
 
     try {
       final response = await widget.apiClient.post('/api/login', {
-        'email': _loginController.text,
-        'password': _passwordController.text,
+        'email': email,
+        'password': password,
       });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data['error'] == null || data['error'].isEmpty) {
-          // Login successful - navigate to leaderboard
+        final id = data['id'];
+        int? parsedId;
+        if (id is int) {
+          parsedId = id;
+        } else if (id is String) {
+          parsedId = int.tryParse(id);
+        }
+        final hasValidId = parsedId != null && parsedId > 0;
+        final errorValue = data['error'];
+        final hasErrorMessage = errorValue is String && errorValue.isNotEmpty;
+
+        if (hasValidId && !hasErrorMessage) {
           print('Login successful! User ID: ${data['id']}');
 
-          // Navigate to leaderboard page
           if (mounted) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => LeaderboardPage(
-                  userId: data['id'] is String
-                      ? int.parse(data['id'])
-                      : data['id'],
+                  userId: parsedId!,
                   userName: '${data['firstName']} ${data['lastName']}'.trim(),
                   apiClient: widget.apiClient,
                 ),
@@ -64,7 +81,9 @@ class _LoginPageState extends State<LoginPage>
           }
         } else {
           setState(() {
-            _errorMessage = data['error'];
+            _errorMessage = hasErrorMessage
+                ? errorValue
+                : 'Email/Password combination incorrect';
           });
         }
       } else if (response.statusCode == 403) {
