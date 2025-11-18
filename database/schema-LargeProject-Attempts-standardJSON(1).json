@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "_id",
+    "AttemptNumber",
+    "ChallengeId",
+    "Date",
+    "Passed",
+    "UserId"
+  ],
+  "properties": {
+    "_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "AttemptNumber": {
+      "type": "integer"
+    },
+    "ChallengeId": {
+      "type": "integer"
+    },
+    "Date": {
+      "type": "string"
+    },
+    "Passed": {
+      "type": "boolean"
+    },
+    "Timestamp": {
+      "$ref": "#/$defs/Date"
+    },
+    "UserId": {
+      "type": "integer"
+    }
+  },
+  "$defs": {
+    "ObjectId": {
+      "type": "object",
+      "properties": {
+        "$oid": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$"
+        }
+      },
+      "required": [
+        "$oid"
+      ],
+      "additionalProperties": false
+    },
+    "Date": {
+      "type": "object",
+      "properties": {
+        "$date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "$date"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

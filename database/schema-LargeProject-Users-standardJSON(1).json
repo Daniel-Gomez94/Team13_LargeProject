@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "_id",
+    "CreatedAt",
+    "Email",
+    "EmailVerified",
+    "FirstName",
+    "LastName",
+    "Password",
+    "UserID",
+    "VerifiedAt"
+  ],
+  "properties": {
+    "_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "CreatedAt": {
+      "$ref": "#/$defs/Date"
+    },
+    "Email": {
+      "type": "string"
+    },
+    "EmailVerified": {
+      "type": "boolean"
+    },
+    "FirstName": {
+      "type": "string"
+    },
+    "LastName": {
+      "type": "string"
+    },
+    "Password": {
+      "type": "string"
+    },
+    "UpdatedAt": {
+      "$ref": "#/$defs/Date"
+    },
+    "UserID": {
+      "type": "integer"
+    },
+    "VerifiedAt": {
+      "$ref": "#/$defs/Date"
+    }
+  },
+  "$defs": {
+    "ObjectId": {
+      "type": "object",
+      "properties": {
+        "$oid": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$"
+        }
+      },
+      "required": [
+        "$oid"
+      ],
+      "additionalProperties": false
+    },
+    "Date": {
+      "type": "object",
+      "properties": {
+        "$date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "$date"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
